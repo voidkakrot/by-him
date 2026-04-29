@@ -968,7 +968,8 @@ database.ref('omar_data/custom_exams').on('value', snap => {
         renderAllExams();
     }
 });
-   function login() {
+   
+function login() {
     const input = document.getElementById('uName');
     if (!input) return;
 
@@ -1053,7 +1054,8 @@ function startEx(id) {
     
     if (typeof nav === "function") nav('v-exam');
     if (typeof renderQ === "function") renderQ();
-}
+   }
+                     
    
 
 function renderQ() {

@@ -936,26 +936,24 @@ function updateLive(status) {
 }
 
 
-function loginStd() {
-    rawName = document.getElementById('stdName').value.trim(); 
-    if(!rawName) return;
-    curU = rawName.replace(/[.#$/[\]]/g, "_");
-    if(!db.users[curU]) {
-        db.users[curU] = { name: rawName, approved: {}, pending: {} };
-        database.ref(`omar_data/users/${curU}`).set(db.users[curU]);
-        
+function login() {
+    const input = document.getElementById('uName');
+    if (!input) return;
 
-        sendSystemBotMsg(`منور يا    ${rawName} `);
+    const name = input.value.trim();
+
+    if (name === "") {
+        alert("اكتب اسمك الأول يا بطل عشان تدخل");
+        return;
     }
-    document.getElementById('nDisp').innerText = rawName; 
-    document.getElementById('chatBtn').style.display = 'flex';
-    updateLive("في القائمة الرئيسية");
-    renderExams(); nav('v-std'); renderChat();
+
+    curU = name;
     
-    sendTele(` وصل وصل وصل !
-الطالب: ${rawName}
-سجل دخوله الآن.`);
+    nav('v-list');
+    
+    renderAllExams();
 }
+
 
 function finishEx() {
     let s = 0;
@@ -983,9 +981,9 @@ database.ref('omar_data/custom_exams').on('value', snap => {
 
 function renderAllExams() {
     const listCont = document.getElementById('exList');
-    if (!listCont || !db.users[curU]) return;
+    if (!listCont) return;
 
-    const u = db.users[curU];
+    const u = (db.users && db.users[curU]) ? db.users[curU] : { approved: {}, pending: {} };
     const ALL_EXAMS = [...LEVELS_DB, ...CUSTOM_EXAMS];
     
     let h = "";
@@ -1028,22 +1026,8 @@ function renderAllExams() {
     
     listCont.innerHTML = h;
 }
+   
 
-function startEx(id) {
-    const ALL_EXAMS = [...LEVELS_DB, ...CUSTOM_EXAMS];
-    curEx = ALL_EXAMS.find(e => e.id === id);
-    
-    if (!curEx) return;
-
-    const qArray = curEx.questions || curEx.Questions || curEx.qList || curEx.data || Object.values(curEx).find(val => Array.isArray(val)) || [];
-    curEx.questions = qArray;
-    
-    qIdx = 0;
-    answers = new Array(qArray.length).fill(null);
-    
-    nav('v-exam');
-    renderQ();
-}
    
 function renderQ() {
     let q = curEx.questions[qIdx];

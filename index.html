@@ -936,16 +936,6 @@ function updateLive(status) {
 }
 
 
-function login() {
-    const input = document.getElementById('uName');
-    if (!input) return;
-
-    const name = input.value.trim();
-
-    if (name === "") {
-        alert("اكتب اسمك الأول يا بطل عشان تدخل");
-        return;
-    }
 
     curU = name;
     
@@ -978,57 +968,94 @@ database.ref('omar_data/custom_exams').on('value', snap => {
         renderAllExams();
     }
 });
+   function login() {
+    const input = document.getElementById('uName');
+    if (!input) return;
+
+    const name = input.value.trim();
+    if (!name) {
+        alert("Please enter your name to continue");
+        return;
+    }
+
+    curU = name;
+    
+    if (typeof nav === "function") {
+        nav('v-list');
+    }
+    
+    renderAllExams();
+}
 
 function renderAllExams() {
     const listCont = document.getElementById('exList');
     if (!listCont) return;
 
-    const u = (db.users && db.users[curU]) ? db.users[curU] : { approved: {}, pending: {} };
-    const ALL_EXAMS = [...LEVELS_DB, ...CUSTOM_EXAMS];
+    const uData = (typeof db !== 'undefined' && db.users && db.users[curU]) 
+                  ? db.users[curU] 
+                  : { approved: {}, pending: {} };
+
+    const remoteExams = (typeof CUSTOM_EXAMS !== 'undefined') ? CUSTOM_EXAMS : [];
+    const allExams = [...LEVELS_DB, ...remoteExams];
     
-    let h = "";
+    let html = "";
     
-    ALL_EXAMS.forEach(ex => {
-        let app = u.approved && u.approved[ex.id] !== undefined;
-        let pend = u.pending && u.pending[ex.id] !== undefined;
+    allExams.forEach(ex => {
+        const isPassed = uData.approved && uData.approved[ex.id] !== undefined;
+        const isWaiting = uData.pending && uData.pending[ex.id] !== undefined;
         
-        let statusTxt = "Available Now";
+        let label = "Start Exam";
         let action = `startEx('${ex.id}')`;
         let icon = "fa-graduation-cap";
-        let opacity = "1";
-        let color = ex.themeColor || "#7f00ff";
-        let title = ex.title || ex.name || "امتحان جديد";
+        let opac = "1";
+        let theme = ex.themeColor || "#7f00ff";
+        let name = ex.title || ex.name || "New Assessment";
 
-        if (app) {
-            statusTxt = `Passed (${u.approved[ex.id]}%)`;
-            action = `showRes(${u.approved[ex.id]})`;
-            icon = "fa-circle-check";
-        } else if (pend) {
-            statusTxt = "Pending Approval";
+        if (isPassed) {
+            label = `Score: ${uData.approved[ex.id]}%`;
+            action = `showRes(${uData.approved[ex.id]})`;
+            icon = "fa-check-circle";
+        } else if (isWaiting) {
+            label = "Reviewing...";
             action = "nav('v-wait')";
-            icon = "fa-clock";
-            opacity = "0.6";
+            icon = "fa-hourglass-half";
+            opac = "0.7";
         }
 
-        h += `
-        <div class="exam-item" style="--item-color: ${color}; opacity: ${opacity}; cursor: pointer; border-left: 4px solid ${color};" onclick="${action}">
-            <div style="display: flex; flex-direction: column; width: 100%;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                    <span style="font-weight: bold; font-size: 1.1rem; color: #fff;">${title}</span>
-                    <i class="fas ${icon}" style="color: ${color}; font-size: 1.2rem;"></i>
+        html += `
+        <div class="exam-item" style="border-left: 4px solid ${theme}; opacity: ${opac}; cursor: pointer;" onclick="${action}">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div>
+                    <div style="font-weight: bold; color: #fff; font-size: 1rem;">${name}</div>
+                    <div style="font-size: 0.75rem; color: ${theme}; font-weight: 600; margin-top: 4px;">${label}</div>
                 </div>
-                <div style="font-size: 0.8rem; color: ${color}; font-weight: 600;">
-                    ${statusTxt}
-                </div>
+                <i class="fas ${icon}" style="color: ${theme}; font-size: 1.1rem;"></i>
             </div>
         </div>`;
     });
     
-    listCont.innerHTML = h;
+    listCont.innerHTML = html;
+}
+
+function startEx(id) {
+    const remoteExams = (typeof CUSTOM_EXAMS !== 'undefined') ? CUSTOM_EXAMS : [];
+    const allExams = [...LEVELS_DB, ...remoteExams];
+    
+    curEx = allExams.find(e => e.id === id);
+    if (!curEx) return;
+
+    const validQuestions = curEx.questions || curEx.Questions || curEx.qList || 
+                           Object.values(curEx).find(v => Array.isArray(v)) || [];
+    
+    curEx.questions = validQuestions;
+    qIdx = 0;
+    answers = new Array(validQuestions.length).fill(null);
+    
+    if (typeof nav === "function") nav('v-exam');
+    if (typeof renderQ === "function") renderQ();
 }
    
 
-   
 function renderQ() {
     let q = curEx.questions[qIdx];
     document.getElementById('exTitle').innerHTML = `<span style="font-size:0.6rem; opacity:0.8;">— ${curEx.title} —</span>`;

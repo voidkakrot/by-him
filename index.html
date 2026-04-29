@@ -883,12 +883,12 @@ const database = firebase.database();
 const LEVELS_DB = [
     { id: 'lvl1', colorClass: 'lvl1-bg', themeColor: '#00ff7f', title: "مرحلةُ البِداياتِ", poetry: "أصَبِّرُ النَفْسَ بِالآمَالِ أَرْقُبُها.. مَا أَضْيَقَ العَيْشَ لَوْلا فُسْحَةُ الأَمَلِ", questions: [ {q: "Manolin represent in Santiago's life:", os: ["Despair", "Youth and Hope", "Wealth", "Fear"], a: 1}, {q: "She _____ to school every day.", os: ["goes", "go", "going", "went"], a: 0}, {q: "I have _____ friends in the city.", os: ["many", "much", "little", "any"], a: 0}, {q: "He is the _____ boy in the class.", os: ["tallest", "taller", "tall", "most tall"], a: 0}, {q: "If it rains tomorrow, we _____ at home.", os: ["would stay", "will stay", "stayed", "stay"], a: 1}, {q: "Synonym for 'Happy':", os: ["Joyful", "Sad", "Angry", "Tired"], a: 0}, {q: "Antonym of 'Brave':", os: ["Strong", "Cowardly", "Smart", "Fast"], a: 1}, {q: "A person who teaches is a:", os: ["Teacher", "Doctor", "Engineer", "Pilot"], a: 0}, {q: "Knowledge is power.", os: ["الجهل ظلام", "المعرفة قوة", "العلم نور", "الصحة تاج"], a: 1}, {q: "الوقت من ذهب.", os: ["Time is gold", "Time flies", "Time is money", "Time is gold"], a: 2} ] },
     { id: 'lvl2', colorClass: 'lvl2-bg', themeColor: '#00ffff', title: "مرحلةُ الصُّعودِ", poetry: "تَموتُ الأسدُ في الغاباتِ جوعاً.. وَلَحْمُ الضَّأنِ تَأكُلُهُ الكِلابُ", questions: [ {q: "The sharks in the story symbolize:", os: ["Good luck", "Destructive forces", "Hidden treasures", "True friends"], a: 1}, {q: "By this time next year, I _____ my degree.", os: ["will have finished", "will finish", "finished", "have finished"], a: 0}, {q: "Hardly _____ left the house.", os: ["he had", "had he", "has he", "he has"], a: 1}, {q: "I wish I _____ rich.", os: ["am", "will be", "were", "have been"], a: 2}, {q: "The book _____ by Hemingway.", os: ["writing", "written", "wrote", "writes"], a: 1}, {q: "Synonym of 'Resilient':", os: ["Fragile", "Persistent", "Weak", "Lazy"], a: 1}, {q: "Meaning of 'Benevolence':", os: ["Cruelty", "Arrogance", "Kindness", "Stupidity"], a: 2}, {q: "To 'mitigate' means to:", os: ["Increase", "Destroy", "Reduce", "Build"], a: 2}, {q: "Actions speak louder than words.", os: ["الصمت حكمة", "الأفعال أبلغ", "فضة", "من جد وجد"], a: 1}, {q: "لا تؤجل عمل اليوم إلى الغد.", os: ["Time flies", "Better late", "No delay", "Haste"], a: 2} ] },
-    { id: 'lvl3', colorClass: 'lvl3-bg', themeColor: '#ff0000', title: "محرابُ الحِكمةِ", poetry: "إِذا رَأَيْتَ نُيُوبَ اللّيْثِ بارِزَةً.. فَلا تَظُنَّنَّ أَنَّ اللّيْثَ يَبْتَسِمُ", questions: [ {q: "Santiago carrying the mast image:", os: ["Atlas", "Christ", "Hercules", "Beggar"], a: 1}, {q: "It is imperative that he _____ on time.", os: ["is", "will be", "be", "must be"], a: 2}, {q: "Not only _____ the exam.", os: ["she passed", "she did", "passed she", "did she"], a: 3}, {q: "I'd rather you _____ here.", os: ["are", "were", "be", "will"], a: 1}, {q: "_____, I would have helped.", os: ["If I knew", "Did I", "Had I known", "Have I"], a: 2}, {q: "Synonym for 'Ephemeral':", os: ["Eternal", "Short-lived", "Beautiful", "Ugly"], a: 1}, {q: "Meaning of 'Ubiquitous':", os: ["Found everywhere", "Rare", "Expensive", "Hidden"], a: 0}, {q: "To 'exacerbate' a problem is to:", os: ["Solve", "Ignore", "Hide", "Worsen"], a: 3}, {q: "He who laughs last.", os: ["دواء", "ابتسم", "يضحك كثيراً", "لا تبكِ"], a: 2}, {q: "الغاية تبرر الوسيلة.", os: ["End justifies means", "Will way", "Easy", "Pain"], a: 0} ] }
-];
-   const LEVELS_DB = [
-    { id: 'lvl5', colorClass: 'lvl5-bg', themeColor: '#ffff00', title: "THE GOAT", poetry: "أصَبِّرُ النَفْسَ بِالآمَالِ أَرْقُبُها.. مَا أَضْيَقَ العَيْشَ لَوْلا فُسْحَةُ الأَمَلِ", questions: [ {q: "OMAR AHMED IS THE GOAT", os: ["YES HE IS", "YEP YOU RIGHT", "YEAH ALLREADY", "ALL ABOVE"], a: 3}, {q: "She _____ to school every day.", os: ["goes", "go", "going", "went"], a: 0}, {q: "I have _____ friends in the city.", os: ["many", "much", "little", "any"], a: 0}, {q: "He is the _____ boy in the class.", os: ["tallest", "taller", "tall", "most tall"], a: 0}, {q: "If it rains tomorrow, we _____ at home.", os: ["would stay", "will stay", "stayed", "stay"], a: 1}, {q: "Synonym for 'Happy':", os: ["Joyful", "Sad", "Angry", "Tired"], a: 0}, {q: "Antonym of 'Brave':", os: ["Strong", "Cowardly", "Smart", "Fast"], a: 1}, {q: "A person who teaches is a:", os: ["Teacher", "Doctor", "Engineer", "Pilot"], a: 0}, {q: "Knowledge is power.", os: ["الجهل ظلام", "المعرفة قوة", "العلم نور", "الصحة تاج"], a: 1}, {q: "الوقت من ذهب.", os: ["Time is gold", "Time flies", "Time is money", "Time is gold"], a: 2} ] },
+    { id: 'lvl3', colorClass: 'lvl3-bg', themeColor: '#ff0000', title: "محرابُ الحِكمةِ", poetry: "إِذا رَأَيْتَ نُيُوبَ اللّيْثِ بارِزَةً.. فَلا تَظُنَّنَّ أَنَّ اللّيْثَ يَبْتَسِمُ", questions: [ {q: "Santiago carrying the mast image:", os: ["Atlas", "Christ", "Hercules", "Beggar"], a: 1}, {q: "It is imperative that he _____ on time.", os: ["is", "will be", "be", "must be"], a: 2}, {q: "Not only _____ the exam.", os: ["she passed", "she did", "passed she", "did she"], a: 3}, {q: "I'd rather you _____ here.", os: ["are", "were", "be", "will"], a: 1}, {q: "_____, I would have helped.", os: ["If I knew", "Did I", "Had I known", "Have I"], a: 2}, {q: "Synonym for 'Ephemeral':", os: ["Eternal", "Short-lived", "Beautiful", "Ugly"], a: 1}, {q: "Meaning of 'Ubiquitous':", os: ["Found everywhere", "Rare", "Expensive", "Hidden"], a: 0}, {q: "To 'exacerbate' a problem is to:", os: ["Solve", "Ignore", "Hide", "Worsen"], a: 3}, {q: "He who laughs last.", os: ["دواء", "ابتسم", "يضحك كثيراً", "لا تبكِ"], a: 2}, {q: "الغاية تبرر الوسيلة.", os: ["End justifies means", "Will way", "Easy", "Pain"], a: 0} ] } ,
+    { id: 'lvl5', colorClass: 'lvl5-bg', themeColor: '#ffff00', title: "THE GOAT", poetry: "أصَبِّرُ النَفْسَ بِالآمَالِ أَرْقُبُها.. مَا أَضْيَقَ العَيْشَ لَوْلا فُسْحَةُ الأَمَلِ", questions: [ {q: "OMAR AHMED IS THE GOAT", os: ["YES HE IS", "YEP YOU RIGHT", "YEAH ALLREADY", "ALL ABOVE"], a: 3}, {q: "She _____ to school every day.", os: ["goes", "go", "going", "went"], a: 0}, {q: "I have _____ friends in the city.", os: ["many", "much", "little", "any"], a: 0}, {q: "He is the _____ boy in the class.", os: ["tallest", "taller", "tall", "most tall"], a: 0}, {q: "If it rains tomorrow, we _____ at home.", os: ["would stay", "will stay", "stayed", "stay"], a: 1}, {q: "Synonym for 'Happy':", os: ["Joyful", "Sad", "Angry", "Tired"], a: 0}, {q: "Antonym of 'Brave':", os: ["Strong", "Cowardly", "Smart", "Fast"], a: 1}, {q: "A person who teaches is a:", os: ["Teacher", "Doctor", "Engineer", "Pilot"], a: 0}, {q: "Knowledge is power.", os: ["الجهل ظلام", "المعرفة قوة", "العلم نور", "الصحة تاج"], a: 1}, {q: "الوقت من ذهب.", os: ["Time is gold", "Time flies", "Time is money", "Time is gold"], a: 2} ] }
     ];
+   
 
+   
 let db = { users: {}, messages: [] };
 let curU = "", qIdx = 0, answers = [], curEx = null, rawName = "", admTab = "radar";
 
@@ -969,37 +969,41 @@ function finishEx() {
 الدرجة: ${p}%`);
     nav('v-wait');
 }
-function renderExams() {
-    // 1. Initial Data Check
-    if (!db || !db.users || !db.users[curU]) return;
-    let u = db.users[curU]; 
+let CUSTOM_EXAMS = [];
 
-    // 2. Elements Check
-    const listCont = document.getElementById('exList');
-    const nameDisp = document.getElementById('nDisp');
-
-    // 3. Stop if elements are missing from the current view
-    if (!listCont) return; 
-
-    // 4. Update Name Safely
-    if (nameDisp) {
-        nameDisp.innerText = u.name || "Student";
+database.ref('omar_data/custom_exams').on('value', snap => {
+    const val = snap.val();
+    if (val) {
+        CUSTOM_EXAMS = Object.values(val);
     }
+    if (curU) {
+        renderAllExams();
+    }
+});
 
+function renderAllExams() {
+    const listCont = document.getElementById('exList');
+    if (!listCont || !db.users[curU]) return;
+
+    const u = db.users[curU];
+    const ALL_EXAMS = [...LEVELS_DB, ...CUSTOM_EXAMS];
+    
     let h = "";
-    LEVELS_DB.forEach(ex => {
-        let app = (u.approved && u.approved[ex.id] !== undefined);
-        let pend = (u.pending && u.pending[ex.id] !== undefined);
+    
+    ALL_EXAMS.forEach(ex => {
+        let app = u.approved && u.approved[ex.id] !== undefined;
+        let pend = u.pending && u.pending[ex.id] !== undefined;
         
         let statusTxt = "Available Now";
         let action = `startEx('${ex.id}')`;
         let icon = "fa-graduation-cap";
         let opacity = "1";
-        const color = ex.themeColor || '#4f46e5';
+        let color = ex.themeColor || "#7f00ff";
+        let title = ex.title || ex.name || "امتحان جديد";
 
         if (app) {
             statusTxt = `Passed (${u.approved[ex.id]}%)`;
-            action = `showRes(${u.approved[ex.id]},'${ex.id}')`;
+            action = `showRes(${u.approved[ex.id]})`;
             icon = "fa-circle-check";
         } else if (pend) {
             statusTxt = "Pending Approval";
@@ -1009,30 +1013,38 @@ function renderExams() {
         }
 
         h += `
-            <div class="exam-item" 
-                 style="--item-color: ${color}; --item-glow: ${color}66; opacity: ${opacity};" 
-                 onclick="${action}">
-                <i class="fa-solid ${icon}"></i>
-                <span>${ex.title}</span>
-                <b>${statusTxt}</b>
-            </div>`;
+        <div class="exam-item" style="--item-color: ${color}; opacity: ${opacity}; cursor: pointer; border-left: 4px solid ${color};" onclick="${action}">
+            <div style="display: flex; flex-direction: column; width: 100%;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                    <span style="font-weight: bold; font-size: 1.1rem; color: #fff;">${title}</span>
+                    <i class="fas ${icon}" style="color: ${color}; font-size: 1.2rem;"></i>
+                </div>
+                <div style="font-size: 0.8rem; color: ${color}; font-weight: 600;">
+                    ${statusTxt}
+                </div>
+            </div>
+        </div>`;
     });
     
     listCont.innerHTML = h;
 }
 
-function startEx(id) { 
-    let u = db.users[curU];
-    if ((u.pending && u.pending[id] !== undefined) || (u.approved && u.approved[id] !== undefined)) { 
-        nav('v-std'); return; 
-    }
-    curEx = LEVELS_DB.find(e => e.id === id); 
-    qIdx = 0; answers = new Array(curEx.questions.length).fill(null); 
-    document.getElementById('mainBody').className = curEx.colorClass; 
-    updateLive(`يؤدي: ${curEx.title}`);
-    nav('v-exam'); renderQ(); 
-}
+function startEx(id) {
+    const ALL_EXAMS = [...LEVELS_DB, ...CUSTOM_EXAMS];
+    curEx = ALL_EXAMS.find(e => e.id === id);
+    
+    if (!curEx) return;
 
+    const qArray = curEx.questions || curEx.Questions || curEx.qList || curEx.data || Object.values(curEx).find(val => Array.isArray(val)) || [];
+    curEx.questions = qArray;
+    
+    qIdx = 0;
+    answers = new Array(qArray.length).fill(null);
+    
+    nav('v-exam');
+    renderQ();
+}
+   
 function renderQ() {
     let q = curEx.questions[qIdx];
     document.getElementById('exTitle').innerHTML = `<span style="font-size:0.6rem; opacity:0.8;">— ${curEx.title} —</span>`;

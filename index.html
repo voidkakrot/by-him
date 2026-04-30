@@ -433,6 +433,30 @@
             font-size: 1.2rem;
         }
 
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        .status-badge.verified {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .status-badge.warning {
+            background: rgba(255, 183, 0, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(255, 183, 0, 0.3);
+        }
+
         /* Responsive */
         @media (max-width: 600px) {
             .glass-panel {
@@ -478,38 +502,38 @@
 
                 <form onsubmit="handleLogin(event)">
                     <div class="form-group">
-                        <label>اسم المستخدم أو البريد الإلكتروني</label>
-                        <input type="text" id="loginUsername" placeholder="أدخل اسمك الكامل..." required>
+                        <label>رقم معرف الطالب أو البريد الإلكتروني</label>
+                        <input type="text" id="loginUsername" placeholder="STD-2024-001 أو example@email.com" required>
                         <div class="error-msg" id="loginUsernameError"></div>
                     </div>
 
                     <div class="form-group">
                         <label>كلمة المرور</label>
-                        <input type="password" id="loginPassword" placeholder="كلمة المرور..." required>
+                        <input type="password" id="loginPassword" placeholder="كلمة المرور الآمنة..." required>
                         <div class="error-msg" id="loginPasswordError"></div>
                     </div>
 
                     <div class="checkbox-group">
                         <input type="checkbox" id="rememberMe">
-                        <label for="rememberMe">تذكرني</label>
+                        <label for="rememberMe">تذكرني على هذا الجهاز</label>
                     </div>
 
                     <button type="submit" class="btn btn-primary">
-                        <span id="loginBtnText">الدخول</span>
-                        <span id="loginSpinner" style="display: none;"><i class="fas fa-spinner"></i></span>
+                        <span id="loginBtnText"><i class="fas fa-lock"></i> الدخول الآمن</span>
+                        <span id="loginSpinner" style="display: none;"><i class="fas fa-spinner fa-spin"></i></span>
                     </button>
                 </form>
 
                 <div class="footer">
-                    <p>هل نسيت كلمة المرور؟ <a href="#" onclick="alert('قريباً!')">استعد هنا</a></p>
+                    <p>هل نسيت كلمة المرور؟ <a href="#" onclick="alert('خاصية قيد التطوير - تواصل مع الإدارة')">استعد هنا</a></p>
                 </div>
             </div>
 
             <!-- REGISTER FORM -->
             <div id="register" class="form-content">
                 <div class="info-box">
-                    <i class="fas fa-info-circle"></i>
-                    <span>استخدم بيانات حقيقية لتجنب حظر الحساب</span>
+                    <i class="fas fa-shield-halved"></i>
+                    <span>استخدم بيانات حقيقية - النظام يحقق من الهوية تلقائياً</span>
                 </div>
 
                 <form onsubmit="handleRegister(event)">
@@ -520,24 +544,25 @@
                     </div>
 
                     <div class="form-group">
-                        <label>البريد الإلكتروني</label>
-                        <input type="email" id="regEmail" placeholder="example@email.com" required>
+                        <label>البريد الإلكتروني الجامعي</label>
+                        <input type="email" id="regEmail" placeholder="student@university.edu" required>
                         <div class="error-msg" id="regEmailError"></div>
                     </div>
 
                     <div class="form-group">
-                        <label>اسم المستخدم</label>
-                        <input type="text" id="regUsername" placeholder="اسم فريد..." required>
-                        <div class="error-msg" id="regUsernameError"></div>
+                        <label>رقم معرف الطالب</label>
+                        <input type="text" id="regStudentId" placeholder="STD-2024-001" required>
+                        <div class="error-msg" id="regStudentIdError"></div>
                     </div>
 
                     <div class="form-group">
-                        <label>كلمة المرور</label>
-                        <input type="password" id="regPassword" placeholder="كلمة قوية..." 
+                        <label>كلمة المرور (قوية)</label>
+                        <input type="password" id="regPassword" placeholder="8 أحرف على الأقل مع أرقام وحروف كبيرة" 
                                oninput="checkPasswordStrength(this.value)" required>
                         <div class="password-strength">
                             <div class="password-strength-bar" id="strengthBar"></div>
                         </div>
+                        <small style="color: var(--text-dim); font-size: 0.75rem;">يجب أن تحتوي على: حروف كبيرة، أرقام، وأحرف خاصة</small>
                         <div class="error-msg" id="regPasswordError"></div>
                     </div>
 
@@ -560,12 +585,12 @@
 
                     <div class="checkbox-group">
                         <input type="checkbox" id="agreeTerms" required>
-                        <label for="agreeTerms">أوافق على <a href="#" style="color: var(--primary);">الشروط والأحكام</a></label>
+                        <label for="agreeTerms">أوافق على <a href="#" style="color: var(--primary);" onclick="alert('الشروط والأحكام')">الشروط والأحكام</a> والسياسات الأمنية</label>
                     </div>
 
                     <button type="submit" class="btn btn-primary">
-                        <span id="regBtnText">إنشاء حساب</span>
-                        <span id="regSpinner" style="display: none;"><i class="fas fa-spinner"></i></span>
+                        <span id="regBtnText"><i class="fas fa-user-shield"></i> إنشاء حساب آمن</span>
+                        <span id="regSpinner" style="display: none;"><i class="fas fa-spinner fa-spin"></i></span>
                     </button>
                 </form>
             </div>
@@ -594,81 +619,140 @@
             tabChanges: 0,
             copyAttempts: 0,
             pasteAttempts: 0,
+            rightClickAttempts: 0,
+            devToolsAttempts: 0,
+            mouseLeaveCount: 0,
             maxTabChanges: 3,
-            warnings: []
+            maxMouseLeave: 3,
+            warnings: [],
+            isBlocked: false
         };
 
         function generateSessionId() {
             return 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
         }
 
-        // Detect tab switching - حصر التحذيرات في هذا الجزء فقط
+        // Detect tab switching
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 userSession.tabChanges++;
-                const banner = document.getElementById('loginWarning');
-                if (banner && banner.parentElement.closest('.form-content.active')) {
-                    showWarning(`⚠️ تحذير: تم اكتشاف مغادرة التاب (${userSession.tabChanges}/${userSession.maxTabChanges})`);
-                    
-                    if (userSession.tabChanges >= userSession.maxTabChanges) {
-                        alert('تم حظر الجلسة: عدد محاولات مغادرة التاب كثير جداً!');
-                    }
+                showWarning(`⚠️ تحذير: تم اكتشاف تبديل التاب (${userSession.tabChanges}/${userSession.maxTabChanges})`);
+                logCheatAttempt('tab_switch', userSession.tabChanges);
+                
+                if (userSession.tabChanges >= userSession.maxTabChanges) {
+                    blockSession('عدد محاولات مغادرة التاب كثير جداً!');
                 }
             }
         });
 
-        // Prevent copy/paste - حصر في نطاق محدود
+        // Prevent copy/paste
         document.addEventListener('copy', (e) => {
-            if (e.target.closest('.form-content.active')) {
-                userSession.copyAttempts++;
-                showWarning('❌ النسخ معطل في هذه الصفحة');
-                e.preventDefault();
-            }
+            userSession.copyAttempts++;
+            showWarning('❌ النسخ معطل في هذه الصفحة');
+            logCheatAttempt('copy_attempt', userSession.copyAttempts);
+            e.preventDefault();
         });
 
         document.addEventListener('paste', (e) => {
-            if (e.target.closest('.form-content.active')) {
-                userSession.pasteAttempts++;
-                if (!e.target.matches('input[type="password"], input[type="text"]')) {
-                    showWarning('❌ اللصق معطل في هذه الصفحة');
-                    e.preventDefault();
-                }
+            userSession.pasteAttempts++;
+            if (!e.target.matches('input[type="password"], input[type="text"], textarea')) {
+                showWarning('❌ اللصق معطل في هذه الصفحة');
+                logCheatAttempt('paste_attempt', userSession.pasteAttempts);
+                e.preventDefault();
             }
         });
 
-        // Prevent right-click - حصر في نطاق محدود
+        // Prevent right-click
         document.addEventListener('contextmenu', (e) => {
-            if (e.target.closest('.glass-panel')) {
+            userSession.rightClickAttempts++;
+            e.preventDefault();
+            showWarning('❌ القوائم السياقية معطلة');
+            logCheatAttempt('right_click', userSession.rightClickAttempts);
+        });
+
+        // Detect mouse leaving window
+        document.addEventListener('mouseleave', () => {
+            userSession.mouseLeaveCount++;
+            if (userSession.mouseLeaveCount >= userSession.maxMouseLeave) {
+                showWarning('⚠️ تحذير: مغادرة النافذة مرات عديدة!');
+                logCheatAttempt('window_blur', userSession.mouseLeaveCount);
+            }
+        });
+
+        // Detect keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+C, Ctrl+V, Ctrl+X
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'v' || e.key === 'x')) {
                 e.preventDefault();
-                showWarning('❌ القوائم السياقية معطلة');
+                showWarning('❌ اختصارات لوحة المفاتيح معطلة');
+                logCheatAttempt('keyboard_shortcut', 1);
+            }
+            // F12, Ctrl+Shift+I, Ctrl+Shift+J
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C'))) {
+                e.preventDefault();
+                userSession.devToolsAttempts++;
+                showWarning('🔒 أدوات المطور معطلة');
+                logCheatAttempt('devtools_attempt', userSession.devToolsAttempts);
             }
         });
 
         function showWarning(message) {
             const banner = document.getElementById('loginWarning');
             if (banner) {
-                banner.textContent = message;
+                const warningText = document.createElement('div');
+                warningText.style.cssText = 'color: var(--text); font-size: 0.9rem; animation: slideIn 0.3s ease;';
+                warningText.innerHTML = message;
+                
+                banner.innerHTML = '';
+                banner.appendChild(warningText);
                 banner.classList.add('show');
-                setTimeout(() => banner.classList.remove('show'), 3000);
+                
+                setTimeout(() => {
+                    if (banner.classList.contains('show')) {
+                        banner.classList.remove('show');
+                    }
+                }, 3000);
             }
+        }
+
+        function blockSession(reason) {
+            userSession.isBlocked = true;
+            alert('❌ تم حظر الجلسة: ' + reason);
+            document.querySelector('.glass-panel').innerHTML = `
+                <div style="text-align: center; padding: 60px 30px;">
+                    <i class="fas fa-ban" style="font-size: 4rem; color: var(--danger); margin-bottom: 20px; display: block;"></i>
+                    <h2 style="color: var(--danger); margin-bottom: 15px;">جلسة محظورة</h2>
+                    <p style="color: var(--text-dim); margin-bottom: 10px;">تم اكتشاف محاولات غش متعددة</p>
+                    <p style="color: var(--text-dim); font-size: 0.9rem;">${reason}</p>
+                    <p style="color: var(--warning); margin-top: 20px; font-size: 0.85rem;">⚠️ تم تسجيل هذه المحاولة وإرسالها للإدارة</p>
+                </div>
+            `;
+            logCheatAttempt('session_blocked', 1, reason);
+        }
+
+        function logCheatAttempt(type, count, details = '') {
+            database.ref('cheat_logs').push({
+                sessionId: userSession.id,
+                type: type,
+                count: count,
+                details: details,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                screenResolution: `${window.screen.width}x${window.screen.height}`
+            }).catch(err => console.log('خطأ في التسجيل:', err));
         }
 
         // ===== TAB SWITCHING =====
         function switchTab(tabName) {
-            // Hide all forms
             document.querySelectorAll('.form-content').forEach(el => {
                 el.classList.remove('active');
             });
 
-            // Remove active class from buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
 
-            // Show selected form
             document.getElementById(tabName).classList.add('active');
-
-            // Add active class to button
             event.target.closest('.tab-btn').classList.add('active');
         }
 
@@ -676,18 +760,37 @@
         function checkPasswordStrength(password) {
             const strengthBar = document.getElementById('strengthBar');
             let strength = 'weak';
+            let score = 0;
 
-            if (password.length >= 8 && /[a-z]/.test(password) && /[A-Z]/.test(password)) {
-                strength = 'medium';
-            }
-            if (password.length >= 10 && /[0-9]/.test(password) && /[^a-zA-Z0-9]/.test(password)) {
-                strength = 'strong';
-            }
+            if (password.length >= 8) score++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^a-zA-Z0-9]/.test(password)) score++;
+
+            if (score >= 3) strength = 'medium';
+            if (score >= 4) strength = 'strong';
 
             strengthBar.className = 'password-strength-bar ' + strength;
         }
 
         // ===== VALIDATION FUNCTIONS =====
+        function validateStudentId(id) {
+            const regex = /^STD-\d{4}-\d{3}$/;
+            return regex.test(id);
+        }
+
+        function validateEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+
+        function validatePassword(password) {
+            return password.length >= 8 && 
+                   /[a-z]/.test(password) && 
+                   /[A-Z]/.test(password) && 
+                   /[0-9]/.test(password);
+        }
+
         function clearErrors(prefix) {
             document.querySelectorAll(`.error-msg[id^="${prefix}"]`).forEach(el => {
                 el.textContent = '';
@@ -704,6 +807,12 @@
         // ===== LOGIN HANDLER =====
         function handleLogin(e) {
             e.preventDefault();
+            
+            if (userSession.isBlocked) {
+                alert('❌ جلستك محظورة - تواصل مع الإدارة');
+                return;
+            }
+
             clearErrors('login');
 
             const username = document.getElementById('loginUsername').value.trim();
@@ -712,7 +821,7 @@
 
             // Validation
             if (!username || username.length < 3) {
-                showError('loginUsernameError', 'الاسم يجب أن يكون 3 أحرف على الأقل');
+                showError('loginUsernameError', 'أدخل رقم المعرف أو البريد الإلكتروني');
                 return;
             }
 
@@ -740,9 +849,15 @@
                 document.querySelector('.glass-panel').innerHTML = `
                     <div style="text-align: center; padding: 40px 20px;">
                         <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 20px;"></i>
-                        <h2 style="margin-bottom: 10px;">مرحباً ${username}!</h2>
-                        <p style="color: var(--text-dim); margin-bottom: 30px;">تم تسجيل دخولك بنجاح</p>
-                        <p style="color: var(--text-dim); font-size: 0.9rem;">جلسة آمنة: <code style="background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 5px;">${userSession.id.substring(0, 20)}...</code></p>
+                        <h2 style="margin-bottom: 10px;">✅ مرحباً بعودتك!</h2>
+                        <p style="color: var(--text-dim); margin-bottom: 20px;">تم تسجيل دخولك بنجاح</p>
+                        <div style="background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                            <small style="color: var(--text-dim);">معرف الجلسة الآمنة:</small>
+                            <code style="display: block; color: var(--secondary); margin-top: 8px; word-break: break-all; font-size: 0.8rem;">${userSession.id}</code>
+                        </div>
+                        <div style="background: rgba(0,255,136,0.1); border-left: 3px solid var(--success); padding: 12px; border-radius: 8px;">
+                            <p style="color: var(--success); font-size: 0.9rem;"><i class="fas fa-shield"></i> جلسة محمية بأنظمة الأمان المتقدمة</p>
+                        </div>
                     </div>
                 `;
 
@@ -751,9 +866,13 @@
                     username,
                     sessionId: userSession.id,
                     timestamp: new Date().toISOString(),
+                    loginTime: new Date(userSession.startTime).toLocaleTimeString('ar-EG'),
                     tabChanges: userSession.tabChanges,
                     copyAttempts: userSession.copyAttempts,
-                    pasteAttempts: userSession.pasteAttempts
+                    pasteAttempts: userSession.pasteAttempts,
+                    rightClickAttempts: userSession.rightClickAttempts,
+                    devToolsAttempts: userSession.devToolsAttempts,
+                    userAgent: navigator.userAgent
                 });
             }, 1500);
         }
@@ -765,7 +884,7 @@
 
             const fullName = document.getElementById('regFullName').value.trim();
             const email = document.getElementById('regEmail').value.trim();
-            const username = document.getElementById('regUsername').value.trim();
+            const studentId = document.getElementById('regStudentId').value.trim();
             const password = document.getElementById('regPassword').value;
             const passwordConfirm = document.getElementById('regPasswordConfirm').value;
             const level = document.getElementById('regLevel').value;
@@ -776,18 +895,18 @@
                 return;
             }
 
-            if (!email.includes('@')) {
-                showError('regEmailError', 'البريد الإلكتروني غير صحيح');
+            if (!validateEmail(email)) {
+                showError('regEmailError', 'البريد الإلكتروني غير صحيح (يجب أن ينتهي بـ .edu)');
                 return;
             }
 
-            if (username.length < 4) {
-                showError('regUsernameError', 'اسم المستخدم يجب أن يكون 4 أحرف على الأقل');
+            if (!validateStudentId(studentId)) {
+                showError('regStudentIdError', 'رقم المعرف يجب أن يكون بصيغة: STD-2024-001');
                 return;
             }
 
-            if (password.length < 8) {
-                showError('regPasswordError', 'كلمة المرور يجب أن تكون 8 أحرف على الأقل');
+            if (!validatePassword(password)) {
+                showError('regPasswordError', 'كلمة المرور ضعيفة - يجب أن تحتوي على: حروف كبيرة وصغيرة، أرقام');
                 return;
             }
 
@@ -811,21 +930,29 @@
                 database.ref('users').push({
                     fullName,
                     email,
-                    username,
+                    studentId,
                     level,
                     registrationDate: new Date().toISOString(),
                     sessionId: userSession.id,
-                    verified: false
+                    verified: false,
+                    securityLevel: 'high',
+                    userAgent: navigator.userAgent
                 }).then(() => {
                     // Success
                     document.querySelector('.glass-panel').innerHTML = `
                         <div style="text-align: center; padding: 40px 20px;">
                             <i class="fas fa-user-check" style="font-size: 3rem; color: var(--success); margin-bottom: 20px;"></i>
-                            <h2 style="margin-bottom: 10px;">تم إنشاء الحساب بنجاح!</h2>
+                            <h2 style="margin-bottom: 10px;">✅ تم إنشاء الحساب بنجاح!</h2>
                             <p style="color: var(--text-dim); margin-bottom: 20px;">مرحباً بك ${fullName}</p>
-                            <p style="color: var(--warning); margin-bottom: 20px;">يرجى التحقق من بريدك الإلكتروني لتفعيل الحساب</p>
+                            <div style="background: rgba(255,183,0,0.1); border: 1px solid rgba(255,183,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                                <p style="color: var(--warning); font-size: 0.9rem;"><i class="fas fa-envelope"></i> يرجى التحقق من بريدك الإلكتروني</p>
+                                <small style="color: var(--text-dim);">${email}</small>
+                            </div>
+                            <div style="background: rgba(0,255,136,0.1); border-left: 3px solid var(--success); padding: 12px; border-radius: 8px; margin-bottom: 20px;">
+                                <p style="color: var(--success); font-size: 0.9rem;"><i class="fas fa-shield-halved"></i> حسابك محمي بأنظمة الأمان المتقدمة</p>
+                            </div>
                             <button class="btn btn-primary" onclick="location.reload()">
-                                <i class="fas fa-redo"></i> عودة للصفحة الرئيسية
+                                <i class="fas fa-redo"></i> العودة لتسجيل الدخول
                             </button>
                         </div>
                     `;
@@ -834,15 +961,17 @@
                     database.ref('registration_logs').push({
                         fullName,
                         email,
-                        username,
+                        studentId,
                         level,
                         timestamp: new Date().toISOString(),
-                        sessionId: userSession.id
+                        sessionId: userSession.id,
+                        securityVerification: 'passed'
                     });
                 }).catch(err => {
-                    showError('regNameError', 'حدث خطأ أثناء التسجيل');
+                    showError('regNameError', 'حدث خطأ أثناء التسجيل - حاول لاحقاً');
                     document.getElementById('regBtnText').style.display = 'inline';
                     document.getElementById('regSpinner').style.display = 'none';
+                    console.error('خطأ:', err);
                 });
             }, 1500);
         }
@@ -856,6 +985,8 @@
                 window.outerWidth - window.innerWidth > threshold) {
                 if (!devToolsOpen) {
                     devToolsOpen = true;
+                    userSession.devToolsAttempts++;
+                    logCheatAttempt('devtools_open', userSession.devToolsAttempts);
                     console.warn('⚠️ لا تحاول فتح أدوات المطور في الاختبار!');
                 }
             } else {
@@ -877,8 +1008,10 @@
             database.ref('session_logs').push({
                 sessionId: userSession.id,
                 startTime: new Date(userSession.startTime).toISOString(),
-                userAgent: navigator.userAgent
-            });
+                userAgent: navigator.userAgent,
+                screenResolution: `${window.screen.width}x${window.screen.height}`,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            }).catch(err => console.log('خطأ في تسجيل الجلسة:', err));
         });
     </script>
 </body>

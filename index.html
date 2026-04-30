@@ -602,45 +602,55 @@
             return 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
         }
 
-        // Detect tab switching
+        // Detect tab switching - حصر التحذيرات في هذا الجزء فقط
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 userSession.tabChanges++;
-                showWarning(`⚠️ تحذير: تم اكتشاف مغادرة التاب (${userSession.tabChanges}/${userSession.maxTabChanges})`);
-                
-                if (userSession.tabChanges >= userSession.maxTabChanges) {
-                    alert('تم حظر الجلسة: عدد محاولات مغادرة التاب كثير جداً!');
-                    // Could redirect or lock the session here
+                const banner = document.getElementById('loginWarning');
+                if (banner && banner.parentElement.closest('.form-content.active')) {
+                    showWarning(`⚠️ تحذير: تم اكتشاف مغادرة التاب (${userSession.tabChanges}/${userSession.maxTabChanges})`);
+                    
+                    if (userSession.tabChanges >= userSession.maxTabChanges) {
+                        alert('تم حظر الجلسة: عدد محاولات مغادرة التاب كثير جداً!');
+                    }
                 }
             }
         });
 
-        // Prevent copy/paste
+        // Prevent copy/paste - حصر في نطاق محدود
         document.addEventListener('copy', (e) => {
-            userSession.copyAttempts++;
-            showWarning('❌ النسخ معطل في هذه الصفحة');
-            e.preventDefault();
-        });
-
-        document.addEventListener('paste', (e) => {
-            userSession.pasteAttempts++;
-            if (!e.target.matches('input[type="password"], input[type="text"]')) {
-                showWarning('❌ اللصق معطل في هذه الصفحة');
+            if (e.target.closest('.form-content.active')) {
+                userSession.copyAttempts++;
+                showWarning('❌ النسخ معطل في هذه الصفحة');
                 e.preventDefault();
             }
         });
 
-        // Prevent right-click
+        document.addEventListener('paste', (e) => {
+            if (e.target.closest('.form-content.active')) {
+                userSession.pasteAttempts++;
+                if (!e.target.matches('input[type="password"], input[type="text"]')) {
+                    showWarning('❌ اللصق معطل في هذه الصفحة');
+                    e.preventDefault();
+                }
+            }
+        });
+
+        // Prevent right-click - حصر في نطاق محدود
         document.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            showWarning('❌ القوائم السياقية معطلة');
+            if (e.target.closest('.glass-panel')) {
+                e.preventDefault();
+                showWarning('❌ القوائم السياقية معطلة');
+            }
         });
 
         function showWarning(message) {
             const banner = document.getElementById('loginWarning');
-            banner.textContent = message;
-            banner.classList.add('show');
-            setTimeout(() => banner.classList.remove('show'), 3000);
+            if (banner) {
+                banner.textContent = message;
+                banner.classList.add('show');
+                setTimeout(() => banner.classList.remove('show'), 3000);
+            }
         }
 
         // ===== TAB SWITCHING =====
@@ -715,7 +725,7 @@
             document.getElementById('loginBtnText').style.display = 'none';
             document.getElementById('loginSpinner').style.display = 'inline-block';
 
-            // Simulate login (replace with actual Firebase auth)
+            // Simulate login
             setTimeout(() => {
                 // Save session
                 if (rememberMe) {
@@ -732,7 +742,7 @@
                         <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 20px;"></i>
                         <h2 style="margin-bottom: 10px;">مرحباً ${username}!</h2>
                         <p style="color: var(--text-dim); margin-bottom: 30px;">تم تسجيل دخولك بنجاح</p>
-                        <p style="color: var(--text-dim); font-size: 0.9rem;">جلسة آمنة: <code style="background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 5px;">${userSession.id}</code></p>
+                        <p style="color: var(--text-dim); font-size: 0.9rem;">جلسة آمنة: <code style="background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 5px;">${userSession.id.substring(0, 20)}...</code></p>
                     </div>
                 `;
 

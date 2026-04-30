@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CTRL</title>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Cairo:wght@400;700;900&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="loginScreen">
+    <div class="login-box">
+      <div class="logo">CTRL</div>
+      <div class="sub">ANTI-CHEAT MONITOR</div>
+      <input type="password" id="passInput" placeholder="• • • •" maxlength="6">
+      <button class="login-btn" onclick="tryLogin()">
+        <i class="fas fa-shield-halved"></i>&nbsp; ACCESS
+      </button>
+    </div>
+  </div>
+
+  <div id="app">
+
+    <div class="topbar">
+      <div class="topbar-title">CT<span>R</span>L</div>
+      <div class="topbar-stats">
+        <div class="stat-pill"><div class="dot dot-green"></div><span id="onlineCount">0</span> ONLINE</div>
+        <div class="stat-pill"><div class="dot dot-red"></div><span id="cheatCount">0</span> CHEATERS</div>
+        <div class="stat-pill"><div class="dot dot-purple"></div><span id="totalCount">0</span> TOTAL</div>
+      </div>
+      <button class="close-btn" onclick="closeMonitorSelf()"><i class="fas fa-xmark"></i></button>
+    </div>
+
+    <div class="page">
+      <div class="section-label">// STUDENT RADAR — LIVE</div>
+      <div class="students-grid" id="studentsGrid">
+        <div class="empty-state">LOADING...</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toast"></div>
+
+  <div id="modal">
+    <div class="modal-box">
+      <h3 id="modalTitle"></h3>
+      <p id="modalMsg"></p>
+      <div class="modal-btns">
+        <button id="modalConfirm">تأكيد</button>
+        <button id="modalCancel" onclick="closeModal()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+  <script src="script.js"></script>
+
+</body>
+</html>

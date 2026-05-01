@@ -25,7 +25,7 @@
   justify-content: center;
 }
 
-/* Arabic slide */
+
 .wel-ar-block {
   position: absolute;
   width: 100%;
@@ -50,7 +50,7 @@
   animation: dividerColor 4s linear infinite;
 }
 
-/* English Tokyo block */
+
 .wel-eng-block {
   position: absolute;
   width: 100%;
@@ -111,7 +111,7 @@
 .tok-char.hide .tok-mid { opacity: 10; transform: scaleY(0.3); }
 .tok-char.hide .tok-bot { opacity: 10; transform: translateY(8px); }
 
-/* slide animations */
+
 @keyframes slideOutLeft {
   0%   { opacity:1; transform: translateX(0); }
   100% { opacity:0; transform: translateX(-110%); }
@@ -385,7 +385,7 @@ background-position:200% 0;
     letter-spacing: 0.5px;
 }
 
-/* --- Chat Window --- */
+
 #chatBox {
     position: fixed;
     bottom: 100px;
@@ -405,7 +405,7 @@ background-position:200% 0;
     transform-origin: bottom right;
 }
 
-/* Chat Responsiveness */
+
 @media (max-width: 480px) {
     #chatBox {
         width: 90vw;
@@ -490,7 +490,7 @@ background-position:200% 0;
 }
 .chat-close-btn:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); color: #ef4444; }
 
-/* --- Tabs --- */
+
 .chat-tabs {
     display: flex;
     gap: 6px;
@@ -533,7 +533,7 @@ background-position:200% 0;
 }
 @keyframes sparkPulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
 
-/* --- Panels --- */
+
 .chat-panel {
     display: none;
     flex-direction: column;
@@ -542,7 +542,7 @@ background-position:200% 0;
 }
 .chat-panel.active { display: flex; }
 
-/* --- Messages Area --- */
+
 #msgsArea, #aiMsgsArea {
     flex: 1;
     padding: 14px 14px 8px;
@@ -629,7 +629,7 @@ background-position:200% 0;
     padding: 8px 14px !important;
 }
 
-/* --- Typing Indicator --- */
+
 .typing-text {
     font-size: 0.72rem;
     color: rgba(127,0,255,0.8);
@@ -641,7 +641,7 @@ background-position:200% 0;
 }
 @keyframes pulse-opacity { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
 
-/* --- AI Typing Dots --- */
+
 .ai-typing-dots {
     display: flex;
     align-items: center;
@@ -692,7 +692,7 @@ background-position:200% 0;
     box-shadow: 0 4px 16px rgba(127,0,255,0.35);
 }
 
-/* --- Chat Input Area --- */
+
 .chat-input-area {
     padding: 10px 12px 12px;
     display: flex;
@@ -741,7 +741,6 @@ background-position:200% 0;
 .send-btn:active { transform: scale(0.94); }
 .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-/* --- AI Welcome Screen --- */
 .ai-welcome {
     display: flex;
     flex-direction: column;
@@ -857,10 +856,7 @@ background-position:200% 0;
     background: radial-gradient(ellipse, var(--sc-glow, rgba(127,0,255,0.08)) 0%, transparent 70%);
     pointer-events:none;
 }
-.stu-radar-card:hover {
-    transform: translateY(-3px) scale(1.01);
-    box-shadow: 0 12px 35px var(--sc-shadow, rgba(127,0,255,0.2));
-}
+
 
 /* Avatar */
 .stu-avatar {

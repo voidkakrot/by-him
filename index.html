@@ -9,7 +9,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script> 
   <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script> 
   <style>
-  /* ===== WELCOME BLOCK ===== */
+  
 .wel-wrap {
   text-align: center;
   margin-bottom: 28px;
@@ -25,7 +25,7 @@
   justify-content: center;
 }
 
-/* Arabic slide */
+
 .wel-ar-block {
   position: absolute;
   width: 100%;
@@ -50,7 +50,7 @@
   animation: dividerColor 4s linear infinite;
 }
 
-/* English Tokyo block */
+
 .wel-eng-block {
   position: absolute;
   width: 100%;
@@ -111,7 +111,6 @@
 .tok-char.hide .tok-mid { opacity: 10; transform: scaleY(0.3); }
 .tok-char.hide .tok-bot { opacity: 10; transform: translateY(8px); }
 
-/* slide animations */
 @keyframes slideOutLeft {
   0%   { opacity:1; transform: translateX(0); }
   100% { opacity:0; transform: translateX(-110%); }
@@ -385,7 +384,7 @@ background-position:200% 0;
     letter-spacing: 0.5px;
 }
 
-/* --- Chat Window --- */
+
 #chatBox {
     position: fixed;
     bottom: 100px;
@@ -533,7 +532,6 @@ background-position:200% 0;
 }
 @keyframes sparkPulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
 
-/* --- Panels --- */
 .chat-panel {
     display: none;
     flex-direction: column;
@@ -542,7 +540,6 @@ background-position:200% 0;
 }
 .chat-panel.active { display: flex; }
 
-/* --- Messages Area --- */
 #msgsArea, #aiMsgsArea {
     flex: 1;
     padding: 14px 14px 8px;
@@ -629,7 +626,7 @@ background-position:200% 0;
     padding: 8px 14px !important;
 }
 
-/* --- Typing Indicator --- */
+
 .typing-text {
     font-size: 0.72rem;
     color: rgba(127,0,255,0.8);
@@ -641,7 +638,7 @@ background-position:200% 0;
 }
 @keyframes pulse-opacity { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
 
-/* --- AI Typing Dots --- */
+
 .ai-typing-dots {
     display: flex;
     align-items: center;
@@ -692,7 +689,7 @@ background-position:200% 0;
     box-shadow: 0 4px 16px rgba(127,0,255,0.35);
 }
 
-/* --- Chat Input Area --- */
+
 .chat-input-area {
     padding: 10px 12px 12px;
     display: flex;
@@ -741,7 +738,7 @@ background-position:200% 0;
 .send-btn:active { transform: scale(0.94); }
 .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-/* --- AI Welcome Screen --- */
+
 .ai-welcome {
     display: flex;
     flex-direction: column;
@@ -809,7 +806,7 @@ background-position:200% 0;
     0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; }
 }
 
-/* ===== 🎨 Student Cards - Premium Design ===== */
+
 .adm-card {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(15px);
@@ -822,7 +819,7 @@ background-position:200% 0;
     align-items: center;
 }
 
-/* NEW STUDENT CARD */
+
 .stu-radar-card {
     position: relative;
     border-radius: 22px;
@@ -861,7 +858,7 @@ background-position:200% 0;
     box-shadow: 0 8px 28px var(--sc-shadow, rgba(127,0,255,0.2));
 }
 
-/* Avatar */
+
 .stu-avatar {
     width: 52px;
     height: 52px;
@@ -892,7 +889,6 @@ background-position:200% 0;
     z-index: 2;
 }
 
-/* Hover tooltip card - stays on screen */
 .stu-hover-card {
     display: none;
     position: fixed;
@@ -930,7 +926,7 @@ background-position:200% 0;
 }
 .stu-hover-row i { width: 14px; text-align: center; }
 
-/* Card Info */
+
 .stu-card-info {
     flex: 1;
     min-width: 0;
@@ -968,7 +964,7 @@ background-position:200% 0;
     margin-top: 4px;
 }
 
-/* Action buttons */
+
 .stu-card-actions {
     display: flex;
     gap: 6px;
@@ -995,7 +991,6 @@ background-position:200% 0;
 .stu-action-btn.unkick{ border-color:rgba(16,185,129,0.35); color:#10b981; background:rgba(16,185,129,0.08); }
 .stu-action-btn.del   { border-color:rgba(239,68,68,0.35);  color:#ef4444; background:rgba(239,68,68,0.08); }
 
-/* kicked overlay stripe */
 .stu-radar-card.is-kicked {
     opacity: 0.75;
 }
@@ -1011,7 +1006,7 @@ background-position:200% 0;
     left:0 !important; top:0 !important;
 }
 
-/* Kicked label */
+
 .stu-kicked-badge {
     display:inline-flex; align-items:center; gap:4px;
     background: rgba(239,68,68,0.12);
@@ -1159,7 +1154,7 @@ background-position:200% 0;
 .res-stat-card.wrong .res-stat-num, .res-stat-card.wrong .res-stat-icon { color: #ef4444; }
 .res-stat-card.total .res-stat-num, .res-stat-card.total .res-stat-icon { color: #818cf8; }
 
-/* Minimal Performance bar */
+
 .res-perf-card { width: 100%; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 16px 18px; z-index: 1; animation: fadeUp 0.5s ease 0.6s both; }
 .res-perf-label { display: flex; justify-content: space-between; font-size: 0.72rem; color: rgba(255,255,255,0.4); font-family: 'Cairo', sans-serif; margin-bottom: 10px; }
 .res-perf-track { height: 6px; border-radius: 99px; background: rgba(255,255,255,0.05); overflow: hidden; }
@@ -1176,7 +1171,6 @@ background-position:200% 0;
 .res-btn-secondary { flex: 1; padding: 14px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; color: rgba(255,255,255,0.7); transition: all 0.25s; }
 .res-btn-secondary:hover { background: rgba(255,255,255,0.08); color: #fff; transform: translateY(-2px); }
 
-/* ===== 🚨 Cheat Warning Overlay ===== */
 #cheat-warning-overlay {
     display: none;
     position: fixed;
@@ -1241,7 +1235,7 @@ background-position:200% 0;
 }
 @keyframes fadeUp { 0%{opacity:0;transform:translateY(15px);} 100%{opacity:1;transform:translateY(0);} }
 
-/* HW Modal Animations */
+
 @keyframes hwNotifSlideIn {
     0% { opacity:0; transform:translateX(400px) scale(0.8); }
     100% { opacity:1; transform:translateX(0) scale(1); }
@@ -1251,9 +1245,7 @@ background-position:200% 0;
     100% { opacity:0; transform:translateX(400px) scale(0.8); }
 }
 
-/* ╔══════════════════════════════════════════════════╗
-   ║   v-wait — 4-Step Pipeline Design               ║
-   ╚══════════════════════════════════════════════════╝ */
+
 #v-wait { padding: 0 !important; overflow-y: auto; }
 
 .wait-wrap {
@@ -1302,7 +1294,7 @@ background-position:200% 0;
     transition: all 0.5s ease;
 }
 
-/* Pipeline */
+
 .wait-pipeline {
     width: 100%;
     position: relative;
@@ -1372,7 +1364,7 @@ background-position:200% 0;
 .wait-dot.active .wait-dot-label { color: rgba(192,132,252,0.9); }
 .wait-dot.done   .wait-dot-label { color: rgba(52,211,153,0.8); }
 
-/* Step card */
+
 .wait-step-card {
     width: 100%;
     background: rgba(255,255,255,0.025);
@@ -1399,7 +1391,7 @@ background-position:200% 0;
     transition: opacity 0.3s;
 }
 
-/* Review button — replaces old back btn */
+
 .wait-review-btn {
     width: 100%; padding: 15px;
     border-radius: 16px;
@@ -1418,7 +1410,7 @@ background-position:200% 0;
     color: #93c5fd; transform: translateY(-2px);
 }
 
-/* ── Answer Review Overlay Cards ── */
+
 .review-q-card {
     background: rgba(255,255,255,0.028);
     border: 1px solid rgba(255,255,255,0.07);
@@ -1451,7 +1443,7 @@ background-position:200% 0;
 .review-ans-chip.correct-hint { background:rgba(16,185,129,0.07); border:1px solid rgba(16,185,129,0.25); color:rgba(52,211,153,0.7); font-size:0.68rem; }
 
 
-/* ===== COSMIC WAIT BACKGROUND ===== */
+
 .glass-panel.wait-cosmic-bg {
     background: radial-gradient(ellipse at 50% 20%, #0d0030 0%, #02010a 55%, #04000f 100%) !important;
     border-color: rgba(127,0,255,0.22) !important;
@@ -1485,7 +1477,7 @@ background-position:200% 0;
 }
 .wait-wrap > * { position: relative; z-index: 1; }
 
-/* ===== INTERACTIVE CHART (COSMOS MAP) ===== */
+ 
 .chart-cosmos-wrap {
     width: 100%;
     height: 260px;
@@ -1803,7 +1795,7 @@ background-position:200% 0;
     </button>
     
     <div class="btn-row" id="loginExtraRow">
-      <button class="omar" style="font-family:ANTON; color:var(--accent);" onclick="nav('v-gate')">OM%R</button>
+      <button class="omar" style="font-family:ANTON; color:var(--accent);" onclick="nav('v-gate')">BY HIM</button>
       <button class="omar" style="color:var(--accent);" onclick="nav('o-omr')">🅺🄰🅺🅁🅾🅃</button>
     </div>
     <button class="btn btn-full" style="background:linear-gradient(45deg,#2d004d,#1a0033,#000000); border:1px solid #2d004d; backdrop-filter:blur(10px); color:var(--accent); font-family:ANTON;" onclick="openMonitor()">
@@ -1811,8 +1803,8 @@ background-position:200% 0;
     </button>
    </div> 
    <div id="v-gate" class="view"> 
-    <h2 style="text-align:center; margin-bottom:20px; font-family:'Amiri';">محرابُ الإدارة</h2> 
-    <input type="password" id="admPass" placeholder="كلمةُ الفصل السّرية"> <button class="btn" onclick="loginAdm()">تخطي الحجاب</button> <button class="btn btn-ghost" onclick="nav('v-login')">إياب</button> 
+    <h2 style="text-align:center; margin-bottom:20px; font-family:'Amiri';">BY HIM MAIN SITE</h2> 
+    <input type="password" id="admPass" placeholder="plS OM%R ENTER THE PASSWORD"> <button class="btn" onclick="loginAdm()">LOGIN</button> <button class="btn btn-ghost" onclick="nav('v-login')">BACK</button> 
    </div> 
    <div id="o-omr" class="view" style="position: relative;">
      <h2 class="rainbow" style="position: absolute; top:-5px; right: 65px; font-size: 15px; font-display: ANTON;">
@@ -1894,7 +1886,7 @@ background-position:200% 0;
        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#10b981;box-shadow:0 0 6px #10b981;"></div>ممتاز (90%+)</div>
        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#3b82f6;box-shadow:0 0 6px #3b82f6;"></div>جيد جداً (75-89%)</div>
        <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#f59e0b;box-shadow:0 0 6px #f59e0b;"></div>جيد (60-74%)</div>
-       <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#ef4444;box-shadow:0 0 6px #ef4444;"></div>يحتاج مراجعة</div>
+       <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#ef4444;box-shadow:0 0 6px #ef4444;"></div>روح نام الله يهديك</div>
      </div>
      <div class="chart-avg" id="chartAvg" style="margin-top:12px;"></div>
    </div>
@@ -1902,14 +1894,14 @@ background-position:200% 0;
     <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;"> <span id="qPos" style="background:var(--accent); padding:5px 15px; border-radius:12px; font-weight:900; font-size:0.8rem;"></span> <span id="exTitle" style="font-weight:bold; color:var(--accent); font-size:0.8rem;"></span> 
     </div> 
     <h3 id="qText" style="margin-bottom:30px; font-family:'Amiri'; font-size:1.5rem; text-align:center; line-height:1.4;"></h3> 
-    <div id="optContainer"></div> <button id="nextBtn" class="btn" onclick="nextQ()">الارتقاءُ للسؤالِ التالي</button> 
+    <div id="optContainer"></div> <button id="nextBtn" class="btn" onclick="nextQ()">التالي</button> 
    </div> 
 
    <div id="v-missed-alert" class="view" style="text-align:center;"> 
     <div style="font-size: 3rem; color: #ef4444; margin-bottom: 20px;"> <i class="fas fa-exclamation-triangle"></i> 
     </div> 
-    <h2 style="font-family:'Amiri'; color: #fff; margin-bottom: 15px;">تنبيهُ الأريبِ الفطِن!</h2> 
-    <p style="font-family:'Amiri'; font-size: 1.3rem; color: #ccc;"> "لقد ندّ عن خاطرِك <span id="missedQNum" style="color:var(--accent); font-weight:bold;"></span>." </p> <button class="btn" style="margin-top: 30px;" onclick="nav('v-exam')">الرجوعُ لِتداركِ السهو</button> 
+    <h2 style="font-family:'Amiri'; color: #fff; margin-bottom: 15px;">رساله من المعلم</h2> 
+    <p style="font-family:'Amiri'; font-size: 1.3rem; color: #ccc;"> "السؤال ده مينفعش يتساب<span id="missedQNum" style="color:var(--accent); font-weight:bold;"></span>." </p> <button class="btn" style="margin-top: 30px;" onclick="nav('v-exam')">مفيش وقت خد راحتك</button> 
    </div> 
 
    <div id="v-wait" class="view">
@@ -2606,7 +2598,7 @@ function resetSite() {
     nav('v-std'); 
 }
 function loginAdm() { 
-    if(document.getElementById('admPass').value === "334") { 
+    if(document.getElementById('admPass').value === "382144") { 
         rawName = "Omar Ahmed"; curU = "admin"; 
         document.getElementById('chatBtn').style.display = 'flex';
         renderAdm(); nav('v-adm'); renderChat();

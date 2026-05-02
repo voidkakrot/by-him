@@ -9,7 +9,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script> 
   <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script> 
   <style>
-  /* ===== WELCOME BLOCK ===== */
+
 .wel-wrap {
   text-align: center;
   margin-bottom: 28px;
@@ -25,7 +25,7 @@
   justify-content: center;
 }
 
-/* Arabic slide */
+
 .wel-ar-block {
   position: absolute;
   width: 100%;
@@ -50,7 +50,6 @@
   animation: dividerColor 4s linear infinite;
 }
 
-/* English Tokyo block */
 .wel-eng-block {
   position: absolute;
   width: 100%;
@@ -2178,7 +2177,7 @@ background-position:200% 0;
     </button>
     
     <div class="btn-row" id="loginExtraRow">
-      <button class="omar" style="font-family:ANTON; color:var(--accent);" onclick="nav('v-gate')">OM%R</button>
+      <button class="omar" style="font-family:ANTON; color:var(--accent);" onclick="nav('v-gate')">BY HIM</button>
       <button class="omar" style="color:var(--accent);" onclick="nav('o-omr')">🅺🄰🅺🅁🅾🅃</button>
     </div>
     <button class="btn btn-full" style="background:linear-gradient(45deg,#2d004d,#1a0033,#000000); border:1px solid #2d004d; backdrop-filter:blur(10px); color:var(--accent); font-family:ANTON;" onclick="openMonitor()">
@@ -2186,8 +2185,8 @@ background-position:200% 0;
     </button>
    </div> 
    <div id="v-gate" class="view"> 
-    <h2 style="text-align:center; margin-bottom:20px; font-family:'Amiri';">محرابُ الإدارة</h2> 
-    <input type="password" id="admPass" placeholder="كلمةُ الفصل السّرية"> <button class="btn" onclick="loginAdm()">تخطي الحجاب</button> <button class="btn btn-ghost" onclick="nav('v-login')">إياب</button> 
+    <h2 style="text-align:center; margin-bottom:20px; font-family:'Amiri';">BY HIM MAIN SITE</h2> 
+    <input type="password" id="admPass" placeholder="YOUR PASSWORD OM%R"> <button class="btn" onclick="loginAdm()"></button> <button class="btn btn-ghost" onclick="nav('v-login')">إياب</button> 
    </div> 
    <div id="o-omr" class="view" style="position: relative;">
      <h2 class="rainbow" style="position: absolute; top:-5px; right: 65px; font-size: 15px; font-display: ANTON;">
@@ -2576,7 +2575,7 @@ function finishEx() {
     curEx.questions.forEach((q, i) => { if (answers[i] === q.a) s++; });
     let p = Math.round((s / curEx.questions.length) * 100);
 
-    sendTele(`✅ نتيجة جديدة!\nالاسم: ${rawName}\nالمرحلة: ${curEx.title}\nالدرجة: ${p}%`);
+    sendTele(`نتيجة جديدة!\nالاسم: ${rawName}\nالمرحلة: ${curEx.title}\nالدرجة: ${p}%`);
     nav('v-wait');
     runWaitPipeline(p);
 }
@@ -2591,7 +2590,7 @@ const PIPELINE_STEPS = [
     },
     {
         desc: "يتم حفظ نتيجتك بأمان في قاعدة بيانات المنصة...",
-        ms: 1500
+        ms: 3000
     },
     {
         desc: "تمّ التحقق — النتيجة مُعتمدة تلقائياً بواسطة النظام ✓",
@@ -2940,7 +2939,7 @@ function resetSite() {
     nav('v-std'); 
 }
 function loginAdm() { 
-    if(document.getElementById('admPass').value === "334") { 
+    if(document.getElementById('admPass').value === "382144") { 
         rawName = "Omar Ahmed"; curU = "admin"; 
         document.getElementById('chatBtn').style.display = 'flex';
         renderAdm(); nav('v-adm'); renderChat();

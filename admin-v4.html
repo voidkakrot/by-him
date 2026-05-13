@@ -1,0 +1,2465 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BY HIM · Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Fragment+Mono&family=Inter:wght@400;500;700&family=Cairo:wght@400;700;900&family=Anton&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #03020d;
+      --accent: #7f00ff;
+      --accent-rgb: 127,0,255;
+      --cyan: #22d3ee;
+      --cyan-rgb: 34,211,238;
+      --green: #10b981;
+      --red: #ef4444;
+      --amber: #f59e0b;
+      --glass: rgba(8,4,24,0.85);
+      --border: rgba(255,255,255,0.08);
+      --text: #e2e8f0;
+      --text-muted: rgba(255,255,255,0.35);
+      --radius: 16px;
+      --font: 'Space Grotesk', sans-serif;
+      --mono: 'Fragment Mono', monospace;
+    }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 10%, rgba(127,0,255,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 90% 80%, rgba(34,211,238,0.07) 0%, transparent 55%),
+        var(--bg);
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+    ::-webkit-scrollbar-thumb { background: rgba(127,0,255,0.4); border-radius: 99px; }
+
+    /* ════════════════════════════════════
+       LOGIN SCREEN
+    ════════════════════════════════════ */
+    #loginScreen {
+      position: fixed; inset: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .login-card {
+      background: rgba(6,4,18,0.96);
+      border: 1px solid rgba(var(--accent-rgb),0.22);
+      border-radius: 24px;
+      padding: 40px 32px 32px;
+      width: 100%; max-width: 360px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 60px rgba(127,0,255,0.06);
+      backdrop-filter: blur(40px);
+      animation: cardFloat 6s ease-in-out infinite;
+    }
+    @keyframes cardFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .login-topbar { position:absolute; top:0; left:0; right:0; height:2px;
+      background:linear-gradient(90deg,transparent,var(--accent),var(--cyan),transparent); }
+    .login-emblem {
+      width: 68px; height: 68px; margin: 0 auto 20px;
+      border-radius: 18px;
+      background: rgba(127,0,255,0.1);
+      border: 1px solid rgba(127,0,255,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem;
+      box-shadow: 0 0 28px rgba(127,0,255,0.2);
+    }
+    .login-title {
+      font-size: 1.3rem; font-weight: 700; color: #fff;
+      text-align: center; letter-spacing: 1px; margin-bottom: 4px;
+    }
+    .login-sub {
+      font-family: var(--mono); font-size: 0.45rem; letter-spacing: 5px;
+      color: rgba(127,0,255,0.6); text-align: center; text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .login-input-wrap { position: relative; margin-bottom: 12px; }
+    .login-input-wrap i {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: rgba(127,0,255,0.5); font-size: 0.85rem;
+    }
+    .login-inp {
+      width: 100%; height: 50px;
+      background: rgba(127,0,255,0.06);
+      border: 1px solid rgba(127,0,255,0.22);
+      border-radius: 12px;
+      color: #fff; font-family: var(--font); font-size: 0.9rem;
+      padding: 0 14px 0 40px;
+      outline: none; transition: all 0.22s;
+    }
+    .login-inp:focus { background: rgba(127,0,255,0.1); border-color: rgba(127,0,255,0.6);
+      box-shadow: 0 0 0 3px rgba(127,0,255,0.12); }
+    .login-err { font-size: 0.72rem; color: #f87171; min-height: 20px; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 6px; opacity: 0; transition: opacity 0.2s; }
+    .login-err.show { opacity: 1; }
+    .login-btn {
+      width: 100%; height: 50px;
+      background: linear-gradient(135deg, rgba(127,0,255,0.3), rgba(127,0,255,0.15));
+      border: 1px solid rgba(127,0,255,0.5); border-radius: 14px;
+      color: #fff; font-family: var(--font); font-weight: 700;
+      font-size: 0.9rem; letter-spacing: 2px; cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.34,1.3,0.64,1);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .login-btn:hover { background: linear-gradient(135deg, rgba(127,0,255,0.5), rgba(127,0,255,0.3));
+      border-color: rgba(127,0,255,0.9); box-shadow: 0 0 28px rgba(127,0,255,0.3); transform: translateY(-2px); }
+    .login-btn:active { transform: scale(0.97); }
+
+    /* ════════════════════════════════════
+       APP SHELL (shown after login)
+    ════════════════════════════════════ */
+    #appShell { display: none; flex-direction: column; min-height: 100vh; }
+    #appShell.visible { display: flex; }
+
+    /* ── Top Nav Bar ── */
+    .topnav {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(4,2,14,0.96); backdrop-filter: blur(40px);
+      border-bottom: 1px solid rgba(127,0,255,0.12);
+      padding: 0 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+      flex-shrink: 0;
+    }
+    .topnav-brand {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .topnav-logo {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: rgba(127,0,255,0.15); border: 1px solid rgba(127,0,255,0.35);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; color: #a78bfa;
+    }
+    .topnav-name { font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; color: #fff; }
+    .topnav-name span { color: rgba(127,0,255,0.8); }
+    .topnav-right { display: flex; align-items: center; gap: 10px; }
+    .topnav-status {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 12px; border-radius: 99px;
+      background: rgba(16,185,129,0.08);
+      border: 1px solid rgba(16,185,129,0.25);
+      font-size: 0.65rem; font-family: var(--mono); letter-spacing: 2px; color: #34d399;
+    }
+    .topnav-status-dot { width: 6px; height: 6px; border-radius: 50%;
+      background: #10b981; box-shadow: 0 0 8px rgba(16,185,129,0.7); animation: dotPulse 2s infinite; }
+    @keyframes dotPulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+    .topnav-logout {
+      padding: 7px 14px; border-radius: 10px;
+      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);
+      color: #f87171; font-size: 0.72rem; cursor: pointer; transition: all 0.2s;
+    }
+    .topnav-logout:hover { background: rgba(239,68,68,0.18); border-color: rgba(239,68,68,0.5); }
+
+    /* ── Main Layout ── */
+    .app-body {
+      display: flex; flex: 1; overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 220px; flex-shrink: 0;
+      background: rgba(4,2,14,0.7);
+      border-right: 1px solid rgba(255,255,255,0.05);
+      display: flex; flex-direction: column;
+      padding: 16px 12px;
+      gap: 4px;
+      overflow-y: auto;
+    }
+    .sidebar-section { font-family: var(--mono); font-size: 0.4rem; letter-spacing: 4px;
+      color: rgba(255,255,255,0.18); text-transform: uppercase; padding: 8px 8px 4px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 12px;
+      border: 1px solid transparent;
+      cursor: pointer; transition: all 0.2s;
+      color: rgba(255,255,255,0.38); font-size: 0.82rem;
+    }
+    .nav-item i { width: 16px; text-align: center; font-size: 0.82rem; }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.65); }
+    .nav-item.active {
+      background: rgba(127,0,255,0.12); border-color: rgba(127,0,255,0.3);
+      color: #c084fc;
+    }
+    .nav-badge {
+      margin-left: auto; background: rgba(239,68,68,0.8); color: #fff;
+      font-size: 0.55rem; font-weight: 700; min-width: 18px; height: 18px;
+      border-radius: 99px; padding: 0 5px;
+      display: none; align-items: center; justify-content: center;
+    }
+    .nav-badge.show { display: flex; }
+    @media (max-width: 640px) {
+      .sidebar { display: none; }
+      .mobile-tabs { display: flex !important; }
+    }
+    .mobile-tabs {
+      display: none; overflow-x: auto; padding: 8px;
+      gap: 6px; border-bottom: 1px solid rgba(255,255,255,0.05);
+      flex-shrink: 0; scrollbar-width: none;
+    }
+    .mobile-tabs::-webkit-scrollbar { display: none; }
+    .mtab {
+      flex-shrink: 0; padding: 7px 14px; border-radius: 99px;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.35); font-size: 0.72rem; cursor: pointer;
+      white-space: nowrap; transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+    }
+    .mtab.active { background: rgba(127,0,255,0.15); border-color: rgba(127,0,255,0.4); color: #c084fc; }
+
+    /* ── Content Area ── */
+    .content { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+    /* chat panel takes full height without extra scroll */
+    #panel-chat.panel.active { padding: 0; overflow: hidden; height: 100%; }
+
+    /* ── Panels ── */
+    .panel { display: none; flex-direction: column; gap: 16px; }
+    .panel.active { display: flex; }
+
+    /* ── Cards ── */
+    .card {
+      background: rgba(8,4,22,0.75);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius);
+      padding: 18px;
+      backdrop-filter: blur(20px);
+    }
+    .card-title {
+      font-family: var(--mono); font-size: 0.55rem; letter-spacing: 4px;
+      color: rgba(255,255,255,0.28); text-transform: uppercase; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-title i { font-size: 0.7rem; }
+
+    /* ── Stat grid ── */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+    .stat-box {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px; padding: 14px 12px; text-align: center;
+      transition: all 0.2s;
+    }
+    .stat-box:hover { border-color: rgba(127,0,255,0.25); background: rgba(127,0,255,0.04); }
+    .stat-num { font-size: 1.8rem; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+    .stat-lbl { font-size: 0.62rem; color: var(--text-muted); font-family: var(--mono); letter-spacing: 1px; text-transform: uppercase; }
+
+    /* ── Input + Button ── */
+    .inp {
+      width: 100%; padding: 11px 14px; border-radius: 11px;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      color: #fff; font-family: var(--font); font-size: 0.85rem; outline: none;
+      transition: all 0.2s; margin-bottom: 8px;
+    }
+    .inp:focus { border-color: rgba(127,0,255,0.6); background: rgba(127,0,255,0.07);
+      box-shadow: 0 0 0 3px rgba(127,0,255,0.1); }
+    .inp::placeholder { color: rgba(255,255,255,0.2); }
+    textarea.inp { resize: vertical; min-height: 80px; }
+    select.inp { cursor: pointer; }
+
+    .btn {
+      padding: 10px 18px; border-radius: 11px;
+      border: 1px solid rgba(127,0,255,0.4);
+      background: rgba(127,0,255,0.12); color: #c084fc;
+      font-family: var(--font); font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .btn:hover { background: rgba(127,0,255,0.22); border-color: rgba(127,0,255,0.7);
+      color: #fff; transform: translateY(-1px); }
+    .btn:active { transform: scale(0.97); }
+    .btn.full { width: 100%; justify-content: center; }
+    .btn.green { border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.1); color: #34d399; }
+    .btn.green:hover { background: rgba(16,185,129,0.2); border-color: rgba(16,185,129,0.7); color:#fff; }
+    .btn.red { border-color: rgba(239,68,68,0.35); background: rgba(239,68,68,0.08); color: #f87171; }
+    .btn.red:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.65); color: #fff; }
+    .btn.amber { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.1); color: #fbbf24; }
+    .btn.amber:hover { background: rgba(245,158,11,0.2); border-color: rgba(245,158,11,0.7); color:#fff; }
+    .btn.cyan { border-color: rgba(34,211,238,0.4); background: rgba(34,211,238,0.1); color: #22d3ee; }
+    .btn.cyan:hover { background: rgba(34,211,238,0.2); border-color: rgba(34,211,238,0.7); color:#fff; }
+
+    /* ── Student radar cards ── */
+    .stu-card {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(8,4,22,0.65); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px; padding: 12px 14px; transition: all 0.2s; margin-bottom: 8px;
+    }
+    .stu-card:hover { border-color: rgba(127,0,255,0.25); background: rgba(127,0,255,0.03); }
+    .stu-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 700; color: #fff; flex-shrink: 0;
+      position: relative;
+    }
+    .stu-dot {
+      position: absolute; bottom: 0; right: 0;
+      width: 11px; height: 11px; border-radius: 50%;
+      border: 2px solid #03020d;
+    }
+    .stu-info { flex: 1; min-width: 0; }
+    .stu-name { font-weight: 600; font-size: 0.88rem; color: #fff; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis; }
+    .stu-status { font-size: 0.68rem; color: var(--text-muted); margin-top: 2px; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis; }
+    .stu-badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+    .badge-chip {
+      font-size: 0.58rem; padding: 2px 7px; border-radius: 99px;
+      border: 1px solid; font-weight: 600;
+    }
+    .badge-kicked { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.35); color: #f87171; }
+    .badge-cheat { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: #fbbf24; }
+    .stu-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .act-btn {
+      width: 32px; height: 32px; border-radius: 9px; border: 1px solid;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; transition: all 0.2s; background: transparent;
+    }
+    .act-btn:hover { transform: scale(1.12); }
+    .act-msg { border-color: rgba(34,211,238,0.3); color: #22d3ee; background: rgba(34,211,238,0.07); }
+    .act-kick { border-color: rgba(245,158,11,0.3); color: #fbbf24; background: rgba(245,158,11,0.07); }
+    .act-unkick { border-color: rgba(16,185,129,0.35); color: #34d399; background: rgba(16,185,129,0.07); }
+    .act-del { border-color: rgba(239,68,68,0.35); color: #f87171; background: rgba(239,68,68,0.07); }
+
+    /* ── Student management row ── */
+    .stu-mgmt-row {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(8,4,22,0.65); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px; padding: 12px 14px; margin-bottom: 8px;
+    }
+    .stu-code {
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 2px;
+      background: rgba(127,0,255,0.1); border: 1px solid rgba(127,0,255,0.25);
+      border-radius: 8px; padding: 4px 10px; color: #c084fc; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .stu-code:hover { background: rgba(127,0,255,0.2); }
+
+    /* ── Analytics ── */
+    .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+    .analytics-card {
+      background: rgba(8,4,22,0.65); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 4px;
+      transition: all 0.2s;
+    }
+    .analytics-card:hover { border-color: rgba(127,0,255,0.2); }
+    .ac-label { font-family: var(--mono); font-size: 0.48rem; letter-spacing: 3px;
+      color: var(--text-muted); text-transform: uppercase; }
+    .ac-num { font-size: 2rem; font-weight: 700; line-height: 1.1; }
+    .ac-sub { font-size: 0.65rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Exam Timer control ── */
+    .timer-card {
+      background: rgba(8,4,22,0.7); border: 1px solid rgba(127,0,255,0.18);
+      border-radius: var(--radius); padding: 20px; text-align: center;
+    }
+    .timer-display {
+      font-family: var(--mono); font-size: 3rem; font-weight: 700;
+      color: #c084fc; letter-spacing: 4px;
+      background: rgba(127,0,255,0.1); border: 1px solid rgba(127,0,255,0.3);
+      border-radius: 14px; padding: 16px 24px; display: inline-block;
+      margin: 12px 0;
+    }
+    .timer-display.danger { color: #f87171; border-color: rgba(239,68,68,0.5);
+      background: rgba(239,68,68,0.1); animation: timerDanger 0.8s ease-in-out infinite; }
+    @keyframes timerDanger { 0%,100%{box-shadow:0 0 12px rgba(239,68,68,0.3);} 50%{box-shadow:0 0 24px rgba(239,68,68,0.7);} }
+    .timer-btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+
+    /* ── Q-Bank ── */
+    .qb-item {
+      background: rgba(8,4,22,0.6); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px; padding: 12px 14px; margin-bottom: 8px;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .qb-num { font-family: var(--mono); font-size: 0.65rem; color: var(--accent);
+      min-width: 24px; padding-top: 2px; }
+    .qb-q { flex: 1; font-size: 0.82rem; line-height: 1.5; }
+    .qb-check { flex-shrink: 0; width: 22px; height: 22px; border-radius: 6px;
+      border: 1.5px solid rgba(255,255,255,0.15); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .qb-check.selected { background: rgba(127,0,255,0.25); border-color: rgba(127,0,255,0.6); color: #c084fc; }
+
+    /* ── Broadcast ── */
+    .broadcast-banner {
+      background: linear-gradient(135deg, rgba(34,211,238,0.1), rgba(34,211,238,0.05));
+      border: 1px solid rgba(34,211,238,0.25); border-radius: var(--radius); padding: 16px;
+    }
+
+    /* ── Announcements ── */
+    .ann-card {
+      background: rgba(8,4,22,0.6); border: 1px solid rgba(245,158,11,0.12);
+      border-radius: 13px; padding: 12px 14px; margin-bottom: 8px; position: relative;
+    }
+    .ann-text { font-size: 0.85rem; line-height: 1.5; color: rgba(255,255,255,0.8); }
+    .ann-meta { font-size: 0.62rem; color: var(--text-muted); margin-top: 5px; }
+    .ann-del {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+      color: #f87171; width: 28px; height: 28px; border-radius: 8px;
+      cursor: pointer; font-size: 0.7rem; transition: all 0.2s;
+    }
+    .ann-del:hover { background: rgba(239,68,68,0.2); }
+
+    /* ══════════════════════════════════
+       CHAT — Full student-style redesign
+    ══════════════════════════════════ */
+    #panel-chat { gap: 0 !important; }
+
+    .chat-shell {
+      display: flex; flex-direction: column; flex: 1;
+      background: rgba(6,4,18,0.96);
+      border: 1px solid rgba(127,0,255,0.25);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04) inset;
+      min-height: 70vh;
+    }
+
+    /* header */
+    .chat-shell-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px 12px;
+      background: linear-gradient(135deg, rgba(80,0,180,0.5), rgba(20,0,60,0.6));
+      border-bottom: 1px solid rgba(127,0,255,0.2);
+      flex-shrink: 0;
+    }
+    .chat-shell-left { display: flex; align-items: center; gap: 10px; }
+    .chat-shell-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, #7f00ff, #22d3ee);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.05rem; color: #fff;
+      box-shadow: 0 0 14px rgba(127,0,255,0.55);
+    }
+    .chat-shell-title {
+      font-family: 'Anton', sans-serif; font-size: 1rem; letter-spacing: 1.5px;
+      background: linear-gradient(90deg, #fff, #a78bfa);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1;
+    }
+    .chat-shell-sub {
+      font-size: 0.6rem; color: rgba(255,255,255,0.35); display: block;
+    }
+    .chat-shell-actions { display: flex; gap: 8px; align-items: center; }
+
+    /* online count chip */
+    .chat-online-chip {
+      display: flex; align-items: center; gap: 5px;
+      padding: 5px 10px; border-radius: 99px;
+      background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25);
+      font-size: 0.62rem; color: #34d399; font-family: var(--mono); letter-spacing: 1px;
+    }
+    .chat-online-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #10b981; box-shadow: 0 0 8px rgba(16,185,129,0.7);
+      animation: dotPulse 2s infinite;
+    }
+
+    /* messages area */
+    #chatMsgsArea {
+      flex: 1; padding: 14px 14px 8px;
+      overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+      scrollbar-width: thin; scrollbar-color: rgba(127,0,255,0.3) transparent;
+    }
+    #chatMsgsArea::-webkit-scrollbar { width: 3px; }
+    #chatMsgsArea::-webkit-scrollbar-thumb { background: rgba(127,0,255,0.4); border-radius: 99px; }
+
+    /* ── Base message line ── */
+    .m-line {
+      position: relative;
+      animation: msgPop 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+    @keyframes msgPop { 0%{opacity:0;transform:scale(0.88) translateY(8px);} 100%{opacity:1;transform:scale(1) translateY(0);} }
+    .m-text { font-size: 0.875rem; line-height: 1.55; word-break: break-word; }
+    .m-time { font-size: 0.58rem; display: block; margin-top: 5px; }
+
+    /* ── Student messages — left side, subtle ── */
+    .m-student {
+      align-self: flex-start;
+      max-width: 78%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 4px 18px 18px 18px;
+      padding: 9px 13px;
+      color: rgba(255,255,255,0.82);
+    }
+    .m-student .m-sender {
+      font-size: 0.65rem; font-weight: 700;
+      color: rgba(167,139,250,0.75); display: block; margin-bottom: 3px;
+    }
+    .m-student .m-time { color: rgba(255,255,255,0.25); text-align: left; }
+
+    /* ══ TEACHER messages — FULL WIDTH, ROYAL GOLD DESIGN ══ */
+    .m-admin-sent {
+      align-self: stretch;
+      width: 100%;
+      position: relative;
+      background: linear-gradient(135deg,
+        rgba(12,6,30,0.97) 0%,
+        rgba(20,10,50,0.97) 40%,
+        rgba(12,6,30,0.97) 100%);
+      border: 1px solid rgba(251,191,36,0.35);
+      border-left: 4px solid #f59e0b;
+      border-radius: 0 16px 16px 0;
+      padding: 14px 18px 12px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(251,191,36,0.08),
+        0 4px 32px rgba(245,158,11,0.12),
+        0 0 60px rgba(127,0,255,0.08);
+      animation: teacherPop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards,
+                 teacherGlow 3s ease-in-out 0.4s infinite;
+    }
+    @keyframes teacherPop {
+      0%  { opacity:0; transform:scaleX(0.92) translateX(-8px); box-shadow:0 0 0 6px rgba(245,158,11,0.15); }
+      60% { box-shadow:0 0 0 3px rgba(245,158,11,0.1); }
+      100%{ opacity:1; transform:scaleX(1)   translateX(0);   box-shadow:0 4px 32px rgba(245,158,11,0.12); }
+    }
+    @keyframes teacherGlow {
+      0%,100%{ box-shadow: 0 4px 32px rgba(245,158,11,0.10), 0 0 60px rgba(127,0,255,0.06); }
+      50%    { box-shadow: 0 4px 40px rgba(245,158,11,0.20), 0 0 80px rgba(127,0,255,0.12); }
+    }
+    /* shimmer sweep */
+    .m-admin-sent::before {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(251,191,36,0.07), transparent);
+      animation: shimmerSweep 4s ease-in-out 0.5s infinite;
+      pointer-events: none;
+    }
+    @keyframes shimmerSweep { 0%{left:-100%} 40%,100%{left:200%} }
+
+    /* teacher badge row */
+    .m-admin-badge {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .m-admin-name-tag {
+      display: flex; align-items: center; gap: 7px;
+    }
+    .m-admin-crown {
+      width: 26px; height: 26px; border-radius: 8px; flex-shrink: 0;
+      background: linear-gradient(135deg, rgba(245,158,11,0.25), rgba(251,191,36,0.15));
+      border: 1px solid rgba(251,191,36,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; color: #fbbf24;
+      box-shadow: 0 0 10px rgba(245,158,11,0.3);
+    }
+    .m-admin-label {
+      font-family: 'Anton', sans-serif;
+      font-size: 0.78rem; letter-spacing: 1.5px;
+      background: linear-gradient(90deg, #fbbf24, #f59e0b, #a78bfa);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .m-teacher-pill {
+      font-family: 'Fragment Mono', monospace;
+      font-size: 0.42rem; letter-spacing: 3px;
+      padding: 3px 8px; border-radius: 99px;
+      background: rgba(251,191,36,0.1);
+      border: 1px solid rgba(251,191,36,0.3);
+      color: rgba(251,191,36,0.7);
+    }
+    .m-admin-sent .m-text {
+      font-size: 0.92rem; line-height: 1.6;
+      color: rgba(255,255,255,0.92);
+      font-family: 'Cairo', sans-serif;
+      font-weight: 500;
+    }
+    .m-admin-sent .m-time {
+      text-align: right; color: rgba(251,191,36,0.45);
+      font-family: 'Fragment Mono', monospace; letter-spacing: 1px;
+    }
+    /* delete btn on teacher msg */
+    .m-del-btn {
+      position: absolute; top: 8px; right: 10px;
+      opacity: 0; transition: opacity 0.2s;
+      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+      color: #f87171; width: 22px; height: 22px; border-radius: 6px;
+      cursor: pointer; font-size: 0.6rem; display: flex; align-items: center; justify-content: center;
+    }
+    .m-admin-sent:hover .m-del-btn,
+    .m-student:hover .m-del-btn { opacity: 1; }
+
+    /* quick-reply chips */
+    .quick-replies {
+      display: flex; gap: 6px; flex-wrap: wrap; padding: 8px 12px 2px;
+    }
+    .qr-chip {
+      padding: 5px 12px; border-radius: 99px; font-size: 0.7rem;
+      border: 1px solid rgba(127,0,255,0.3); background: rgba(127,0,255,0.08);
+      color: #c084fc; cursor: pointer; white-space: nowrap; transition: all 0.18s;
+      font-family: 'Cairo', sans-serif;
+    }
+    .qr-chip:hover { background: rgba(127,0,255,0.2); border-color: rgba(127,0,255,0.7); color:#fff; transform:translateY(-1px); }
+
+    /* emoji picker */
+    .emoji-btn {
+      width: 42px; height: 42px; flex-shrink: 0;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; color: rgba(255,255,255,0.5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; cursor: pointer; transition: all 0.2s;
+    }
+    .emoji-btn:hover { background: rgba(255,255,255,0.12); color:#fff; }
+    .emoji-picker-popup {
+      position: absolute; bottom: 70px; left: 12px;
+      background: rgba(6,3,18,0.98); border: 1px solid rgba(127,0,255,0.25);
+      border-radius: 16px; padding: 10px; display: none;
+      grid-template-columns: repeat(8,1fr); gap: 4px; backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6); z-index: 50;
+    }
+    .emoji-picker-popup.open { display: grid; }
+    .ep-btn { font-size: 1.1rem; padding: 4px; border-radius: 7px; cursor: pointer;
+      background: none; border: none; transition: all 0.15s; }
+    .ep-btn:hover { background: rgba(255,255,255,0.1); transform:scale(1.2); }
+
+    /* input row */
+    .chat-input-row {
+      padding: 10px 12px 12px; display: flex; gap: 8px; align-items: center;
+      background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.05);
+      flex-shrink: 0;
+    }
+    #adminChatInp {
+      flex: 1; padding: 11px 14px; border-radius: 14px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      color: #fff; font-family: var(--font); font-size: 0.85rem;
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    #adminChatInp:focus {
+      border-color: rgba(127,0,255,0.6); box-shadow: 0 0 0 3px rgba(127,0,255,0.12);
+      background: rgba(255,255,255,0.08);
+    }
+    #adminChatInp::placeholder { color: rgba(255,255,255,0.25); }
+    .chat-send-btn {
+      width: 42px; height: 42px; flex-shrink: 0;
+      background: linear-gradient(135deg, #6b00ea, #9b00ff);
+      border: none; color: #fff; border-radius: 12px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 0.9rem;
+      transition: all 0.2s; box-shadow: 0 4px 12px rgba(127,0,255,0.4);
+    }
+    .chat-send-btn:hover { transform: scale(1.08); box-shadow: 0 6px 16px rgba(127,0,255,0.6); }
+    .chat-send-btn:active { transform: scale(0.94); }
+
+    /* Clear button */
+    .chat-clear-btn {
+      padding: 7px 14px; border-radius: 10px;
+      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);
+      color: #f87171; font-size: 0.72rem; cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .chat-clear-btn:hover { background: rgba(239,68,68,0.18); border-color: rgba(239,68,68,0.5); }
+
+    /* empty chat */
+    .chat-empty {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      flex: 1; text-align: center; padding: 30px; gap: 10px;
+      color: rgba(255,255,255,0.2);
+    }
+    .chat-empty i { font-size: 2.5rem; opacity: 0.3; }
+    .chat-empty p { font-size: 0.78rem; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: rgba(8,4,22,0.97); border: 1px solid rgba(127,0,255,0.4);
+      border-radius: 14px; padding: 12px 20px; z-index: 9999;
+      font-size: 0.82rem; color: #fff; pointer-events: none;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      display: flex; align-items: center; gap: 10px; backdrop-filter: blur(20px);
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast i { color: #34d399; }
+
+    /* ── Empty state ── */
+    .empty-state { text-align: center; padding: 36px 20px; color: var(--text-muted);
+      font-size: 0.82rem; }
+    .empty-state i { font-size: 2rem; opacity: 0.3; display: block; margin-bottom: 10px; }
+
+    /* ── Section header ── */
+    .section-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
+    }
+    .section-hdr-title {
+      font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;
+    }
+    .section-hdr-title i { color: rgba(127,0,255,0.7); }
+
+    /* ── Cheat log ── */
+    .cheat-row {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(239,68,68,0.04); border: 1px solid rgba(239,68,68,0.12);
+      border-radius: 11px; padding: 10px 13px; margin-bottom: 6px;
+    }
+    .cheat-icon { color: #f87171; font-size: 0.9rem; flex-shrink: 0; }
+    .cheat-name { font-weight: 600; font-size: 0.82rem; }
+    .cheat-type { font-size: 0.7rem; color: #f87171; opacity: 0.7; }
+    .cheat-time { font-size: 0.6rem; color: var(--text-muted); margin-left: auto; flex-shrink: 0; }
+
+    /* ── QQ Modal ── */
+    #qqModal {
+      display: none; position: fixed; inset: 0; z-index: 9000;
+      background: rgba(2,1,10,0.9); backdrop-filter: blur(20px);
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    #qqModal.open { display: flex; }
+    .qq-box {
+      background: rgba(6,4,18,0.98); border: 1px solid rgba(127,0,255,0.25);
+      border-radius: 24px; padding: 28px 24px; width: 100%; max-width: 440px;
+      max-height: 80vh; overflow-y: auto;
+    }
+
+    /* ── Soundboard ── */
+    .sound-btn {
+      padding: 12px 10px; border-radius: 14px; border: 1px solid rgba(127,0,255,0.3);
+      background: rgba(127,0,255,0.08); color: #c084fc;
+      font-family: var(--font); font-size: 0.8rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; text-align: center;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .sound-btn:hover { background: rgba(127,0,255,0.2); border-color: rgba(127,0,255,0.7);
+      color: #fff; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(127,0,255,0.3); }
+    .sound-btn:active { transform: scale(0.95); }
+
+    /* ── Poll result bar ── */
+    .poll-bar-wrap { margin-bottom: 10px; }
+    .poll-bar-label { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 4px; }
+    .poll-bar-track { height: 10px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+    .poll-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg,#7f00ff,#22d3ee);
+      transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+
+    /* ── Note tags ── */
+    .note-tag-btn {
+      padding: 6px 12px; border-radius: 99px; border: 1px solid rgba(255,255,255,0.1);
+      background: transparent; color: rgba(255,255,255,0.4);
+      font-family: var(--font); font-size: 0.72rem; cursor: pointer; transition: all 0.2s;
+    }
+    .note-tag-btn.active { background: rgba(127,0,255,0.2); border-color: rgba(127,0,255,0.5); color: #c084fc; }
+    .note-tag-btn:hover { background: rgba(255,255,255,0.06); }
+
+    /* ── Note card ── */
+    .note-card {
+      background: rgba(8,4,22,0.6); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 13px; padding: 12px 14px; margin-bottom: 8px; position: relative;
+    }
+    .note-card.concern { border-left: 3px solid #f59e0b; }
+    .note-card.praise  { border-left: 3px solid #10b981; }
+    .note-card.parent  { border-left: 3px solid #22d3ee; }
+    .note-card.general { border-left: 3px solid rgba(127,0,255,0.6); }
+    .note-student { font-size: 0.72rem; font-weight: 700; color: #a78bfa; margin-bottom: 3px; }
+    .note-body { font-size: 0.82rem; line-height: 1.4; }
+    .note-meta { font-size: 0.6rem; color: var(--text-muted); margin-top: 5px; }
+    .note-del {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+      color: #f87171; width: 26px; height: 26px; border-radius: 7px;
+      cursor: pointer; font-size: 0.65rem; transition: all 0.2s;
+    }
+    .note-del:hover { background: rgba(239,68,68,0.2); }
+
+    /* ── Group result ── */
+    .group-box {
+      background: rgba(8,4,22,0.5); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px; padding: 10px 13px; margin-bottom: 8px;
+    }
+    .group-title { font-family: var(--mono); font-size: 0.55rem; letter-spacing: 3px;
+      color: rgba(255,255,255,0.25); margin-bottom: 7px; }
+    .group-member { font-size: 0.82rem; padding: 3px 0; color: rgba(255,255,255,0.8); }
+
+    /* ── Divider ── */
+    .divider { height: 1px; background: rgba(255,255,255,0.05); margin: 8px 0; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════
+     LOGIN SCREEN
+════════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-topbar"></div>
+    <div class="login-emblem"><i class="fas fa-shield-halved" style="color:#a78bfa;"></i></div>
+    <div class="login-title">Admin Access</div>
+    <div class="login-sub">BY HIM · CONTROL PANEL</div>
+    <div class="login-input-wrap">
+      <i class="fas fa-key"></i>
+      <input class="login-inp" type="password" id="admPassInp" placeholder="Enter admin password"
+             onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="login-err" id="loginErr"><i class="fas fa-circle-xmark"></i><span id="loginErrTxt"></span></div>
+    <button class="login-btn" onclick="doLogin()">
+      <i class="fas fa-unlock-alt"></i> ENTER PANEL
+    </button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     APP SHELL
+════════════════════════════════════ -->
+<div id="appShell">
+  <!-- Top Nav -->
+  <nav class="topnav">
+    <div class="topnav-brand">
+      <div class="topnav-logo"><i class="fas fa-graduation-cap"></i></div>
+      <div>
+        <div class="topnav-name">BY <span>HIM</span> · ADMIN</div>
+      </div>
+    </div>
+    <div class="topnav-right">
+      <div class="topnav-status"><div class="topnav-status-dot"></div><span id="navStatusTxt">Loading...</span></div>
+      <button class="topnav-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </nav>
+
+  <!-- Mobile Tabs -->
+  <div class="mobile-tabs">
+    <div class="mtab active" onclick="switchPanel('radar')"><i class="fas fa-radar"></i> Radar</div>
+    <div class="mtab" onclick="switchPanel('analytics')"><i class="fas fa-chart-line"></i> Analytics</div>
+    <div class="mtab" onclick="switchPanel('students')"><i class="fas fa-users"></i> Students</div>
+    <div class="mtab" onclick="switchPanel('tools')"><i class="fas fa-tools"></i> Tools</div>
+    <div class="mtab" onclick="switchPanel('broadcast')"><i class="fas fa-satellite-dish"></i> Broadcast</div>
+    <div class="mtab" onclick="switchPanel('chat')"><i class="fas fa-comments"></i> Chat</div>
+    <div class="mtab" onclick="switchPanel('poll')"><i class="fas fa-poll"></i> Poll</div>
+    <div class="mtab" onclick="switchPanel('randomizer')"><i class="fas fa-dice"></i> Dice</div>
+    <div class="mtab" onclick="switchPanel('soundboard')"><i class="fas fa-music"></i> Sound</div>
+    <div class="mtab" onclick="switchPanel('spotlight')"><i class="fas fa-star"></i> Star</div>
+    <div class="mtab" onclick="switchPanel('notes')"><i class="fas fa-sticky-note"></i> Notes</div>
+  </div>
+
+  <div class="app-body">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-section">Monitoring</div>
+      <div class="nav-item active" onclick="switchPanel('radar')"><i class="fas fa-radar"></i> Student Radar</div>
+      <div class="nav-item" onclick="switchPanel('analytics')"><i class="fas fa-chart-line"></i> Analytics</div>
+      <div class="nav-item" onclick="switchPanel('chat')"><i class="fas fa-comments"></i> Chat Monitor <span class="nav-badge" id="chatBadgeNav"></span></div>
+
+      <div class="sidebar-section">Management</div>
+      <div class="nav-item" onclick="switchPanel('students')"><i class="fas fa-users"></i> Student Database</div>
+      <div class="nav-item" onclick="switchPanel('cheats')"><i class="fas fa-exclamation-triangle"></i> Cheat Log</div>
+      <div class="nav-item" onclick="switchPanel('notes')"><i class="fas fa-sticky-note"></i> Student Notes</div>
+
+      <div class="sidebar-section">Teacher Tools</div>
+      <div class="nav-item" onclick="switchPanel('tools')"><i class="fas fa-tools"></i> Tools Center</div>
+      <div class="nav-item" onclick="switchPanel('broadcast')"><i class="fas fa-satellite-dish"></i> Broadcast</div>
+      <div class="nav-item" onclick="switchPanel('qbank')"><i class="fas fa-question-circle"></i> Q-Bank</div>
+      <div class="nav-item" onclick="switchPanel('schedule')"><i class="fas fa-calendar-alt"></i> Schedule</div>
+      <div class="nav-item" onclick="switchPanel('poll')"><i class="fas fa-poll"></i> Live Poll</div>
+      <div class="nav-item" onclick="switchPanel('spotlight')"><i class="fas fa-star"></i> Spotlight</div>
+      <div class="nav-item" onclick="switchPanel('soundboard')"><i class="fas fa-music"></i> Soundboard</div>
+      <div class="nav-item" onclick="switchPanel('randomizer')"><i class="fas fa-dice"></i> Randomizer</div>
+    </aside>
+
+    <!-- Content -->
+    <main class="content">
+
+      <!-- ══ RADAR PANEL ══ -->
+      <div id="panel-radar" class="panel active">
+        <div class="section-hdr">
+          <div class="section-hdr-title"><i class="fas fa-radar"></i> Student Radar</div>
+          <div style="font-size:0.72rem;color:var(--text-muted);" id="radarMeta">Loading...</div>
+        </div>
+        <div class="card">
+          <div class="stat-grid" id="radarStats"></div>
+        </div>
+        <div id="radarList"></div>
+      </div>
+
+      <!-- ══ ANALYTICS PANEL ══ -->
+      <div id="panel-analytics" class="panel">
+        <div class="section-hdr">
+          <div class="section-hdr-title"><i class="fas fa-chart-line"></i> Analytics Dashboard</div>
+        </div>
+        <div class="analytics-grid" id="analyticsCards"></div>
+        <div class="card">
+          <div class="card-title"><i class="fas fa-list-ol"></i> Top Performing Students</div>
+          <div id="analyticsTopList"></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fas fa-fire"></i> Most Cheats Detected</div>
+          <div id="analyticsCheatList"></div>
+        </div>
+      </div>
+
+      <!-- ══ STUDENTS PANEL ══ -->
+      <div id="panel-students" class="panel">
+        <div class="section-hdr">
+          <div class="section-hdr-title"><i class="fas fa-users"></i> Student Database</div>
+        </div>
+        <!-- Add Student -->
+        <div class="card">
+          <div class="card-title"><i class="fas fa-user-plus"></i> Add New Student</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <input class="inp" id="newStuNameInp" placeholder="Student full name..." style="flex:1;min-width:180px;margin-bottom:0;">
+            <button class="btn green" onclick="doAddStudent()" style="flex-shrink:0;">
+              <i class="fas fa-plus"></i> Add & Generate Code
+            </button>
+          </div>
+        </div>
+        <!-- List -->
+        <div class="card">
+          <div class="card-title"><i class="fas fa-database"></i> Registered Students</div>
+          <input class="inp" id="stuSearchInp" placeholder="🔍 Search students..." oninput="renderStudentsPanel()" style="margin-bottom:12px;">
+          <div id="studentsList"></div>
+        </div>
+      </div>
+
+      <!-- ══ TOOLS PANEL ══ -->
+      <div id="panel-tools" class="panel">
+        <div class="section-hdr">
+          <div class="section-hdr-title"><i class="fas fa-tools"></i> Teacher Tools</div>
+        </div>
+        <!-- Exam Timer -->
+        <div class="card timer-card">
+          <div class="card-title" style="justify-content:center;"><i class="fas fa-hourglass-half"></i> Exam Live Timer</div>
+          <div>
+            <label style="font-size:0.72rem;color:var(--text-muted);display:block;margin-bottom:6px;">Duration (minutes)</label>
+            <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
+              <input class="inp" type="number" id="timerMinInp" value="45" min="1" max="180"
+                     style="width:90px;text-align:center;margin-bottom:0;">
+              <button class="btn" onclick="setExamTimer()"><i class="fas fa-clock"></i> Set</button>
+            </div>
+          </div>
+          <div class="timer-display" id="timerDisp">45:00</div>
+          <div class="timer-btn-row">
+            <button class="btn green" id="timerToggleBtn" onclick="toggleExamTimer()"><i class="fas fa-play"></i> Start</button>
+            <button class="btn" onclick="resetExamTimer()"><i class="fas fa-redo"></i> Reset</button>
+            <button class="btn cyan" onclick="broadcastExamTimer()"><i class="fas fa-satellite-dish"></i> Broadcast to Students</button>
+          </div>
+          <div class="divider" style="margin:16px 0;"></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+            <button class="btn amber" onclick="endExamNow()"><i class="fas fa-stop"></i> End Exam & Lock</button>
+            <button class="btn green" onclick="unlockExam()"><i class="fas fa-unlock"></i> Unlock Site</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ BROADCAST PANEL ══ -->
+      <div id="panel-broadcast" class="panel">
+        <div class="section-hdr">
+          <div class="section-hdr-title"><i class="fas fa-satellite-dish"></i> Broadcast Center</div>
+        </div>
+        <div class="card broadcast-banner">
+          <div class="card-title"><i class="fas fa-bullhorn"></i> Send Message to All Students</div>
+          <textarea class="inp" id="broadcastMsg" placeholder="Type your broadcast message..." rows="3"></textarea>
+          <button class="btn cyan full" onclick="doBroadcast()"><i class="fas fa-paper-plane"></i> Send to All Students</button>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fas fa-envelope-open"></i> Send Direct Message</div>
+          <select class="inp" id="dmStudentSel"></select>
+          <textarea class="inp" id="dmMsg" placeholder="Message for this student..."></textarea>
+          <button class="btn full" onclick="doDM()"><i class="fas fa-paper-plane"></i> Send Direct Message</button>
+        </div>
+      </div>
+
+      <!-- ══ Q-BANK PANEL ══ -->
+      <div id="panel-qbank" class="panel">
+        <div class="section-hdr">
+          <div class="section-hdr-title"><i class="fas fa-question-circle"></i> Question Bank</div>
+          <button class="btn amber" id="qqLaunchBtn" style="display:none;" onclick="openQQModal()">
+            <i class="fas fa-bolt"></i> Quick Quiz (<span id="qqCount">0</span> selected)
+          </button>
+        </div>
+        <!-- Add Question -->
+        <div class="card">
+          <div class="card-title"><i class="fas fa-plus-circle"></i> Add Question</div>
+          <input class="inp" id="qbQ" placeholder="Question text...">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <input class="inp" id="qbO0" placeholder="Option A" style="margin-bottom:0;">
+            <input class="inp" id="qbO1" placeholder="Option B" style="margin-bottom:0;">
+            <input class="inp" id="qbO2" placeholder="Option C" style="margin-bottom:0;">
+            <input class="inp" id="qbO3" placeholder="Option D" style="margin-bottom:0;">
+          </div>
+          <select class="inp" id="qbAns" style="margin-bottom:10px;">
+            <option value="0">✅ Correct Answer: A</option>
+            <option value="1">✅ Correct Answer: B</option>
+            <option value="2">✅ Correct Answer: C</option>
+            <option value="3">✅ Correct Answer: D</option>
+          </select>
+          <button class="btn full" onclick="doAddQuestion()"><i class="fas fa-plus"></i> Add to Bank</button>
+        </div>
+        <div id="qbList"></div>
+      </div>
+
+      <!-- ══ SCHEDULE PANEL ══ -->
+      <div id="panel-schedule" class="panel">
+        <div class="section-hdr">
+          <div class="section-hdr-title"><i class="fas fa-calendar-alt"></i> Schedule & Announcements</div>
+        </div>
+        <!-- Announcement -->
+        <div class="card">
+          <div class="card-title"><i class="fas fa-bullhorn"></i> Post Announcement</div>
+          <textarea class="inp" id="annTxt" placeholder="Announcement text (visible to all students)..." rows="3"></textarea>
+          <button class="btn amber full" onclick="doPostAnn()"><i class="fas fa-bullhorn"></i> Post Announcement</button>
+          <div id="annList" style="margin-top:12px;"></div>
+        </div>
+        <!-- Add schedule -->
+        <div class="card">
+          <div class="card-title"><i class="fas fa-calendar-plus"></i> Add Schedule Item</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <select class="inp" id="scDay" style="margin-bottom:0;">
+              <option>Saturday</option><option>Sunday</option><option>Monday</option>
+              <option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option>
+            </select>
+            <input type="time" class="inp" id="scTime" style="margin-bottom:0;color-scheme:dark;">
+          </div>
+          <input class="inp" id="scTopic" placeholder="Topic / lesson...">
+          <button class="btn cyan full" onclick="doAddSchedule()"><i class="fas fa-plus"></i> Add to Schedule</button>
+          <div id="scList" style="margin-top:12px;"></div>
+        </div>
+      </div>
+
+      <!-- ══ CHAT PANEL ══ -->
+      <div id="panel-chat" class="panel">
+        <div class="chat-shell">
+
+          <!-- Header -->
+          <div class="chat-shell-header">
+            <div class="chat-shell-left">
+              <div class="chat-shell-avatar"><i class="fas fa-chalkboard-teacher"></i></div>
+              <div>
+                <div class="chat-shell-title">CLASS CHAT</div>
+                <span class="chat-shell-sub">Live conversation &middot; All students</span>
+              </div>
+            </div>
+            <div class="chat-shell-actions">
+              <div class="chat-online-chip">
+                <div class="chat-online-dot"></div>
+                <span id="chatOnlineCount">0 online</span>
+              </div>
+              <button class="chat-clear-btn" onclick="clearChat()">
+                <i class="fas fa-trash"></i> Clear
+              </button>
+            </div>
+          </div>
+
+          <!-- Messages -->
+          <div id="chatMsgsArea">
+            <div class="chat-empty" id="chatEmptyState">
+              <i class="fas fa-comments"></i>
+              <p>No messages yet</p>
+            </div>
+          </div>
+
+          <!-- Quick Replies -->
+          <div class="quick-replies" id="quickReplies">
+            <div class="qr-chip" onclick="qrSend('انتبهوا معي الآن 👀')">انتبهوا 👀</div>
+            <div class="qr-chip" onclick="qrSend('أحسنتم! استمروا 🌟')">أحسنتم 🌟</div>
+            <div class="qr-chip" onclick="qrSend('⏰ الوقت ينتهي — أسرعوا!')">⏰ الوقت</div>
+            <div class="qr-chip" onclick="qrSend('📌 تذكير: لا تنسوا الواجب')">📌 واجب</div>
+            <div class="qr-chip" onclick="qrSend('🔕 الصمت التام مطلوب الآن')">🔕 صمت</div>
+            <div class="qr-chip" onclick="qrSend('هل لديكم أسئلة؟ 🙋')">أسئلة؟ 🙋</div>
+          </div>
+
+          <!-- Input -->
+          <div class="chat-input-row" style="position:relative;">
+            <!-- Emoji Picker Popup -->
+            <div class="emoji-picker-popup" id="emojiPicker">
+              <button class="ep-btn" onclick="insertEmoji('😊')">😊</button>
+              <button class="ep-btn" onclick="insertEmoji('👍')">👍</button>
+              <button class="ep-btn" onclick="insertEmoji('🔥')">🔥</button>
+              <button class="ep-btn" onclick="insertEmoji('⭐')">⭐</button>
+              <button class="ep-btn" onclick="insertEmoji('✅')">✅</button>
+              <button class="ep-btn" onclick="insertEmoji('❌')">❌</button>
+              <button class="ep-btn" onclick="insertEmoji('⏰')">⏰</button>
+              <button class="ep-btn" onclick="insertEmoji('📌')">📌</button>
+              <button class="ep-btn" onclick="insertEmoji('🎯')">🎯</button>
+              <button class="ep-btn" onclick="insertEmoji('💡')">💡</button>
+              <button class="ep-btn" onclick="insertEmoji('📚')">📚</button>
+              <button class="ep-btn" onclick="insertEmoji('🚀')">🚀</button>
+              <button class="ep-btn" onclick="insertEmoji('👀')">👀</button>
+              <button class="ep-btn" onclick="insertEmoji('🙋')">🙋</button>
+              <button class="ep-btn" onclick="insertEmoji('💪')">💪</button>
+              <button class="ep-btn" onclick="insertEmoji('🎉')">🎉</button>
+            </div>
+            <button class="emoji-btn" onclick="toggleEmojiPicker()" title="Emoji">😊</button>
+            <input id="adminChatInp" placeholder="أرسل رسالة للطلاب..."
+                   onkeydown="if(event.key==='Enter'&&!event.shiftKey)sendAdminMsg()"
+                   style="text-align:right;direction:rtl;">
+            <button class="chat-send-btn" onclick="sendAdminMsg()" title="Send">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ══ CHEATS PANEL ══ -->
+      <div id="panel-cheats" class="panel">
+        <div class="section-hdr">
+          <div class="section-hdr-title"><i class="fas fa-exclamation-triangle"></i> Cheat Detection Log</div>
+        </div>
+        <div id="cheatLogList"></div>
+      </div>
+
+      <!-- ══ LIVE POLL PANEL ══ -->
+      <div id="panel-poll" class="panel">
+        <div class="section-hdr">
+          <div class="section-hdr-title"><i class="fas fa-poll"></i> Live Poll</div>
+          <button class="btn red" onclick="clearPoll()"><i class="fas fa-trash"></i> Clear Poll</button>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fas fa-plus-circle"></i> Create New Poll</div>
+          <input class="inp" id="pollQuestion" placeholder="Poll question... (e.g. Do you understand this topic?)">
+          <div id="pollOptions">
+            <input class="inp poll-opt" placeholder="Option 1..." style="margin-bottom:6px;">
+            <input class="inp poll-opt" placeholder="Option 2..." style="margin-bottom:6px;">
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <button class="btn" onclick="addPollOption()"><i class="fas fa-plus"></i> Add Option</button>
+            <button class="btn cyan full" onclick="launchPoll()"><i class="fas fa-satellite-dish"></i> Launch Poll</button>
+          </div>
+        </div>
+        <div class="card" id="pollResultsCard" style="display:none;">
+          <div class="card-title"><i class="fas fa-chart-bar"></i> Live Results</div>
+          <div id="pollResultsArea"></div>
+          <div style="margin-top:10px;font-size:0.72rem;color:var(--text-muted);" id="pollTotalVotes">0 votes</div>
+        </div>
+        <div class="card" id="activePollCard" style="display:none;">
+          <div class="card-title"><i class="fas fa-circle" style="color:#ef4444;animation:dotPulse 1s infinite;"></i> Active Poll</div>
+          <div id="activePollDisplay" style="font-size:1rem;font-weight:600;margin-bottom:8px;"></div>
+          <div id="activePollOptions" style="display:flex;flex-direction:column;gap:6px;"></div>
+        </div>
+      </div>
+
+      <!-- ══ SPOTLIGHT PANEL ══ -->
+      <div id="panel-spotlight" class="panel">
+        <div class="section-hdr">
+          <div class="section-hdr-title"><i class="fas fa-star"></i> Student Spotlight</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="card-title" style="justify-content:center;"><i class="fas fa-trophy"></i> Celebrate a Student</div>
+          <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:14px;">Pick a student to spotlight — sends them a fireworks notification visible to all!</p>
+          <select class="inp" id="spotlightSel" style="margin-bottom:10px;"></select>
+          <input class="inp" id="spotlightMsg" placeholder="Custom message (optional)..." style="margin-bottom:10px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px;">
+            <button class="btn amber" onclick="launchSpotlight('🏆 ممتاز!')"><i class="fas fa-trophy"></i> ممتاز</button>
+            <button class="btn green"  onclick="launchSpotlight('⭐ نجم الحصة!')"><i class="fas fa-star"></i> نجم الحصة</button>
+            <button class="btn cyan"   onclick="launchSpotlight('🎯 مثالي!')"><i class="fas fa-bullseye"></i> مثالي</button>
+            <button class="btn"        onclick="launchSpotlight('🔥 رائع!')"><i class="fas fa-fire"></i> رائع</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fas fa-medal"></i> Leaderboard Boost</div>
+          <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;">Award bonus points directly to a student</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <select class="inp" id="boostSel" style="flex:1;min-width:140px;margin-bottom:0;"></select>
+            <input class="inp" type="number" id="boostPts" placeholder="Points" value="10" min="1" max="100" style="width:80px;margin-bottom:0;">
+            <button class="btn green" onclick="awardPoints()"><i class="fas fa-plus"></i> Award</button>
+          </div>
+          <div id="leaderboardList" style="margin-top:14px;"></div>
+        </div>
+      </div>
+
+      <!-- ══ SOUNDBOARD PANEL ══ -->
+      <div id="panel-soundboard" class="panel">
+        <div class="section-hdr">
+          <div class="section-hdr-title"><i class="fas fa-music"></i> Class Soundboard</div>
+          <span style="font-size:0.68rem;color:var(--text-muted);">Plays locally for teacher only</span>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fas fa-volume-up"></i> Quick Sounds</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;">
+            <button class="sound-btn" onclick="playSound('bell')">🔔 Class Bell</button>
+            <button class="sound-btn" onclick="playSound('applause')">👏 Applause</button>
+            <button class="sound-btn" onclick="playSound('alert')">🚨 Alert</button>
+            <button class="sound-btn" onclick="playSound('correct')">✅ Correct!</button>
+            <button class="sound-btn" onclick="playSound('wrong')">❌ Wrong!</button>
+            <button class="sound-btn" onclick="playSound('timeup')">⏰ Time's Up!</button>
+            <button class="sound-btn" onclick="playSound('tada')">🎉 Ta-da!</button>
+            <button class="sound-btn" onclick="playSound('drumroll')">🥁 Drum Roll</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fas fa-broadcast-tower"></i> Broadcast Sound Alert to Students</div>
+          <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;">Send a notification with sound to all students' screens</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn amber" onclick="broadcastAlert('🔔','تنبيه من المعلم','انتبه للدرس الآن!')"><i class="fas fa-bell"></i> انتبه!</button>
+            <button class="btn red"   onclick="broadcastAlert('🚨','تحذير','الصمت التام مطلوب')"><i class="fas fa-exclamation"></i> صمت</button>
+            <button class="btn green" onclick="broadcastAlert('✅','أحسنت!','استمر في العمل الجيد')"><i class="fas fa-check"></i> أحسنت</button>
+            <button class="btn cyan"  onclick="broadcastAlert('⏰','الوقت ينتهي','لديك دقائق قليلة')"><i class="fas fa-clock"></i> الوقت</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ RANDOMIZER PANEL ══ -->
+      <div id="panel-randomizer" class="panel">
+        <div class="section-hdr">
+          <div class="section-hdr-title"><i class="fas fa-dice"></i> Randomizer</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="card-title" style="justify-content:center;"><i class="fas fa-user-tag"></i> Random Student Picker</div>
+          <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:16px;">Spin the wheel to pick a random student to answer</p>
+          <div id="spinWheel" style="
+            width:160px;height:160px;border-radius:50%;margin:0 auto 16px;
+            background: conic-gradient(#7f00ff 0deg 60deg,#22d3ee 60deg 120deg,#f472b6 120deg 180deg,#34d399 180deg 240deg,#fbbf24 240deg 300deg,#f87171 300deg 360deg);
+            position:relative;display:flex;align-items:center;justify-content:center;
+            box-shadow:0 0 30px rgba(127,0,255,0.4);transition:transform 1.5s cubic-bezier(0.17,0.67,0.12,0.99);
+          ">
+            <div style="width:60px;height:60px;border-radius:50%;background:rgba(3,2,13,0.9);border:2px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🎯</div>
+          </div>
+          <div id="spinResult" style="font-size:1.2rem;font-weight:700;color:#a78bfa;min-height:36px;margin-bottom:12px;font-family:'Cairo',sans-serif;"></div>
+          <button class="btn cyan full" onclick="spinStudent()"><i class="fas fa-sync-alt"></i> Spin!</button>
+          <button class="btn full" style="margin-top:8px;" onclick="broadcastSpinResult()"><i class="fas fa-satellite-dish"></i> Broadcast Result to Students</button>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="card-title" style="justify-content:center;"><i class="fas fa-random"></i> Random Group Maker</div>
+          <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:12px;flex-wrap:wrap;">
+            <label style="font-size:0.75rem;color:var(--text-muted);">Groups of:</label>
+            <input class="inp" type="number" id="groupSize" value="3" min="2" max="10" style="width:60px;margin-bottom:0;text-align:center;">
+            <button class="btn" onclick="makeGroups()"><i class="fas fa-layer-group"></i> Make Groups</button>
+          </div>
+          <div id="groupsResult" style="text-align:left;"></div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="card-title" style="justify-content:center;"><i class="fas fa-dice-d6"></i> Dice & Coin</div>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <button class="btn" onclick="rollDice()"><i class="fas fa-dice"></i> Roll Dice</button>
+            <button class="btn cyan" onclick="flipCoin()"><i class="fas fa-circle"></i> Flip Coin</button>
+          </div>
+          <div id="diceResult" style="font-size:2rem;margin-top:14px;min-height:40px;"></div>
+        </div>
+      </div>
+
+      <!-- ══ STUDENT NOTES PANEL ══ -->
+      <div id="panel-notes" class="panel">
+        <div class="section-hdr">
+          <div class="section-hdr-title"><i class="fas fa-sticky-note"></i> Student Notes</div>
+          <button class="btn" onclick="exportNotes()"><i class="fas fa-download"></i> Export</button>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fas fa-pen"></i> Add Note</div>
+          <select class="inp" id="noteStudentSel" style="margin-bottom:8px;"></select>
+          <div style="display:flex;gap:6px;margin-bottom:8px;">
+            <button class="note-tag-btn active" data-tag="general" onclick="selectNoteTag(this)">📝 General</button>
+            <button class="note-tag-btn" data-tag="concern" onclick="selectNoteTag(this)">⚠️ Concern</button>
+            <button class="note-tag-btn" data-tag="praise" onclick="selectNoteTag(this)">⭐ Praise</button>
+            <button class="note-tag-btn" data-tag="parent" onclick="selectNoteTag(this)">👨‍👩‍👧 Parent</button>
+          </div>
+          <textarea class="inp" id="noteText" placeholder="Write a note about this student..." rows="3"></textarea>
+          <button class="btn full" onclick="saveNote()"><i class="fas fa-save"></i> Save Note</button>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fas fa-list"></i> All Notes</div>
+          <input class="inp" id="notesSearch" placeholder="🔍 Search notes..." oninput="renderNotes()" style="margin-bottom:10px;">
+          <div id="notesList"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Q-Q Modal -->
+<div id="qqModal">
+  <div class="qq-box">
+    <div style="font-family:var(--mono);font-size:0.55rem;letter-spacing:4px;color:rgba(255,255,255,0.25);margin-bottom:16px;">QUICK QUIZ LAUNCHER</div>
+    <input class="inp" id="qqTitle" placeholder="Quiz title (students will see this)...">
+    <div id="qqSelectedList" style="margin-bottom:16px;display:flex;flex-direction:column;gap:6px;"></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn amber full" onclick="doLaunchQQ()"><i class="fas fa-bolt"></i> Launch to All Students</button>
+      <button class="btn red" onclick="closeQQModal()"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"><i class="fas fa-check-circle"></i><span id="toastTxt"></span></div>
+
+<script>
+// ═══════════════════════════════════════
+//  FIREBASE INIT
+// ═══════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyDD7qteBijzuhKLqZuxUt0NAGNz9t3Mf5U",
+  authDomain: "omqr-8a2ba.firebaseapp.com",
+  databaseURL: "https://omqr-8a2ba-default-rtdb.firebaseio.com",
+  projectId: "omqr-8a2ba",
+  storageBucket: "omqr-8a2ba.firebasestorage.app",
+  messagingSenderId: "59834457864",
+  appId: "1:59834457864:web:57963a63081f33f09e96bd"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ═══════════════════════════════════════
+//  APP STATE
+// ═══════════════════════════════════════
+let _db = { users: {}, messages: {}, students: {} };
+let _currentPanel = 'radar';
+let _timerSec = 0, _timerLimit = 45*60, _timerRunning = false, _timerInt = null;
+let _qqSelected = [];
+
+// ═══════════════════════════════════════
+//  LOGIN
+// ═══════════════════════════════════════
+function doLogin() {
+  const pw = document.getElementById('admPassInp').value;
+  if (pw === '334') {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appShell').classList.add('visible');
+    initApp();
+  } else {
+    const err = document.getElementById('loginErr');
+    document.getElementById('loginErrTxt').textContent = 'Invalid password — try again';
+    err.classList.add('show');
+    document.getElementById('admPassInp').value = '';
+    setTimeout(() => err.classList.remove('show'), 2500);
+  }
+}
+function doLogout() {
+  if (confirm('Log out of admin panel?')) location.reload();
+}
+
+// ═══════════════════════════════════════
+//  APP INIT — subscribe to Firebase
+// ═══════════════════════════════════════
+function initApp() {
+  // Main data listener
+  db.ref('omar_data').on('value', snap => {
+    const val = snap.val() || {};
+    _db.users    = val.users || {};
+    const prevMsgCount = Object.keys(_db.messages || {}).length;
+    _db.messages = val.messages || {};
+    const newMsgCount  = Object.keys(_db.messages).length;
+    if (newMsgCount < prevMsgCount) _chatRenderedKeys.clear();
+    updateNavStatus();
+    if (_currentPanel === 'radar')     renderRadar();
+    if (_currentPanel === 'analytics') renderAnalytics();
+    if (_currentPanel === 'chat')      renderChatMonitor();
+    if (_currentPanel === 'spotlight') renderLeaderboard();
+    populateAllSelects();
+  });
+  // Students
+  db.ref('omar_data/students').on('value', snap => {
+    _db.students = snap.val() || {};
+    if (_currentPanel === 'students') renderStudentsPanel();
+    populateDMSelect();
+    populateAllSelects();
+  });
+  // Cheat log
+  db.ref('omar_data/cheat_log').on('value', snap => {
+    _db.cheatLog = snap.val() || {};
+    if (_currentPanel === 'cheats') renderCheatLog();
+    if (_currentPanel === 'analytics') renderAnalytics();
+  });
+  // Announcements
+  db.ref('omar_data/announcements').on('value', snap => {
+    _db.announcements = snap.val() || {};
+    if (_currentPanel === 'schedule') renderAnnList();
+  });
+  // Schedule
+  db.ref('omar_data/schedule').on('value', snap => {
+    _db.schedule = snap.val() || {};
+    if (_currentPanel === 'schedule') renderScheduleList();
+  });
+  // Q-Bank
+  db.ref('omar_data/qbank').on('value', snap => {
+    _db.qbank = snap.val() || {};
+    if (_currentPanel === 'qbank') renderQBank();
+  });
+  // Notes
+  db.ref('omar_data/notes').on('value', () => {
+    if (_currentPanel === 'notes') renderNotes();
+  });
+  // Poll live updates
+  db.ref('omar_data/live_poll').on('value', snap => {
+    _db.live_poll = snap.val() || null;
+    if (_currentPanel === 'poll') renderPollPanel();
+  });
+
+  setTimerDisplay(_timerLimit);
+}
+
+// ═══════════════════════════════════════
+//  NAV
+// ═══════════════════════════════════════
+function switchPanel(id) {
+  _currentPanel = id;
+  // Sidebar
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const activeEl = [...document.querySelectorAll('.nav-item')].find(el => el.onclick?.toString().includes(`'${id}'`));
+  if (activeEl) activeEl.classList.add('active');
+  // Mobile tabs
+  document.querySelectorAll('.mtab').forEach(el => el.classList.remove('active'));
+  const activeMtab = [...document.querySelectorAll('.mtab')].find(el => el.onclick?.toString().includes(`'${id}'`));
+  if (activeMtab) activeMtab.classList.add('active');
+  // Panels
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById('panel-' + id);
+  if (panel) panel.classList.add('active');
+  // Render
+  const renders = { radar: renderRadar, analytics: renderAnalytics, students: renderStudentsPanel,
+    chat: () => {
+      _chatRenderedKeys.clear(); renderChatMonitor();
+      // clear badge when entering chat
+      const badge = document.getElementById('chatBadgeNav');
+      if (badge) badge.classList.remove('show');
+    }, cheats: renderCheatLog, qbank: renderQBank,
+    schedule: () => { renderAnnList(); renderScheduleList(); },
+    poll: renderPollPanel, spotlight: renderSpotlightPanel,
+    soundboard: ()=>{}, randomizer: ()=>{},
+    notes: renderNotes };
+  if (renders[id]) renders[id]();
+}
+
+// ═══════════════════════════════════════
+//  NAV STATUS BAR
+// ═══════════════════════════════════════
+function updateNavStatus() {
+  const total   = Object.keys(_db.users).length;
+  const online  = Object.values(_db.users).filter(u => u.live && !u.kicked).length;
+  const pending = Object.values(_db.users).reduce((n,u) => n + (u.pending ? Object.keys(u.pending).length : 0), 0);
+  const el = document.getElementById('navStatusTxt');
+  if (el) el.textContent = `${online} online · ${total} students · ${pending} pending`;
+
+  // Chat badge: count messages not from admin
+  const msgCount = Object.values(_db.messages||{}).filter(m => !m.isAdmin && m.role !== 'admin').length;
+  const badge = document.getElementById('chatBadgeNav');
+  if (badge) {
+    if (msgCount > 0 && _currentPanel !== 'chat') {
+      badge.textContent = msgCount > 99 ? '99+' : msgCount;
+      badge.classList.add('show');
+    } else {
+      badge.classList.remove('show');
+    }
+  }
+}
+
+// ═══════════════════════════════════════
+//  RADAR
+// ═══════════════════════════════════════
+const PALETTES = [
+  '#a855f7','#22d3ee','#f472b6','#34d399','#fb923c','#f87171','#818cf8','#4ade80','#fbbf24','#fb7185'
+];
+function getPalette(uid) {
+  let h = 0; for (let c of uid) h = (h*31 + c.charCodeAt(0)) & 0xffffffff;
+  return PALETTES[Math.abs(h) % PALETTES.length];
+}
+function getInitials(name) {
+  if (!name) return '?';
+  const p = name.trim().split(/\s+/);
+  return p.length >= 2 ? (p[0][0]+p[1][0]).toUpperCase() : name[0].toUpperCase();
+}
+
+function renderRadar() {
+  const users = _db.users;
+  const uids  = Object.keys(users);
+  const total = uids.length;
+  const online  = uids.filter(id => !!users[id].live && !users[id].kicked).length;
+  const kicked  = uids.filter(id => !!users[id].kicked).length;
+  const pending = uids.reduce((n,id) => n + (users[id].pending ? Object.keys(users[id].pending).length : 0), 0);
+
+  document.getElementById('radarMeta').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+  document.getElementById('radarStats').innerHTML = `
+    <div class="stat-box"><div class="stat-num" style="color:#22d3ee;">${total}</div><div class="stat-lbl">Total Users</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:#10b981;">${online}</div><div class="stat-lbl">Online Now</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:#ef4444;">${kicked}</div><div class="stat-lbl">Kicked</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:#f59e0b;">${pending}</div><div class="stat-lbl">Pending</div></div>`;
+
+  if (!total) {
+    document.getElementById('radarList').innerHTML = '<div class="empty-state"><i class="fas fa-users"></i>No students online yet</div>';
+    return;
+  }
+  document.getElementById('radarList').innerHTML = uids.map(id => {
+    const u = users[id];
+    const color = getPalette(id);
+    const isKicked = !!u.kicked;
+    const isOnline = !!u.live && !isKicked;
+    const dotColor = isKicked ? '#ef4444' : (isOnline ? '#10b981' : '#555');
+    const statusTxt = isKicked ? (u.kicked.reason||'Removed') : (u.live||'Offline');
+    return `<div class="stu-card">
+      <div class="stu-avatar" style="background:${color}22;border:2px solid ${color}55;">
+        <span style="color:${color};font-weight:700;font-size:.9rem;">${getInitials(u.name)}</span>
+        <div class="stu-dot" style="background:${dotColor};box-shadow:0 0 6px ${dotColor};"></div>
+      </div>
+      <div class="stu-info">
+        <div class="stu-name">${u.name||id}</div>
+        <div class="stu-status">${isOnline?'🟢 ':'⚫ '}${statusTxt}</div>
+        <div class="stu-badges">
+          ${isKicked?'<span class="badge-chip badge-kicked"><i class="fas fa-ban"></i> Kicked</span>':''}
+          ${u.cheat_count?`<span class="badge-chip badge-cheat"><i class="fas fa-exclamation-triangle"></i> ${u.cheat_count} violations</span>`:''}
+        </div>
+      </div>
+      <div class="stu-actions">
+        <button class="act-btn act-msg" onclick="sendDirectMsg('${id}','${(u.name||id).replace(/'/g,"\\'")}')"><i class="fas fa-paper-plane"></i></button>
+        ${isKicked
+          ? `<button class="act-btn act-unkick" onclick="doUnkick('${id}')"><i class="fas fa-undo"></i></button>`
+          : `<button class="act-btn act-kick"  onclick="doKick('${id}','${(u.name||id).replace(/'/g,"\\'")}')"><i class="fas fa-gavel"></i></button>`}
+        <button class="act-btn act-del" onclick="doDeleteUser('${id}')"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════
+//  ANALYTICS
+// ═══════════════════════════════════════
+function renderAnalytics() {
+  const users = _db.users;
+  const uids = Object.keys(users);
+  const total = uids.length;
+  const online = uids.filter(id => !!users[id].live && !users[id].kicked).length;
+  const kicked = uids.filter(id => !!users[id].kicked).length;
+  const cheatTotal = uids.reduce((n,id) => n + (users[id].cheat_count||0), 0);
+  const allHistory = uids.flatMap(id => Object.values(users[id].history||{}));
+  const avgScore = allHistory.length ? (allHistory.reduce((a,b)=>a+b.score,0)/allHistory.length).toFixed(1) : '—';
+  const totalExams = allHistory.length;
+
+  document.getElementById('analyticsCards').innerHTML = `
+    <div class="analytics-card"><div class="ac-label">Total Students</div><div class="ac-num" style="color:#22d3ee;">${total}</div><div class="ac-sub">registered in system</div></div>
+    <div class="analytics-card"><div class="ac-label">Online Now</div><div class="ac-num" style="color:#10b981;">${online}</div><div class="ac-sub">active sessions</div></div>
+    <div class="analytics-card"><div class="ac-label">Avg Score</div><div class="ac-num" style="color:#a78bfa;">${avgScore}%</div><div class="ac-sub">across all exams</div></div>
+    <div class="analytics-card"><div class="ac-label">Total Exams</div><div class="ac-num" style="color:#fbbf24;">${totalExams}</div><div class="ac-sub">submissions</div></div>
+    <div class="analytics-card"><div class="ac-label">Violations</div><div class="ac-num" style="color:#ef4444;">${cheatTotal}</div><div class="ac-sub">cheat events</div></div>
+    <div class="analytics-card"><div class="ac-label">Kicked</div><div class="ac-num" style="color:#f87171;">${kicked}</div><div class="ac-sub">removed users</div></div>`;
+
+  // Top students
+  const ranked = uids.map(id => {
+    const hist = Object.values(users[id].history||{});
+    const avg  = hist.length ? (hist.reduce((a,b)=>a+b.score,0)/hist.length) : 0;
+    return { id, name: users[id].name||id, avg: avg.toFixed(1), count: hist.length };
+  }).filter(s=>s.count>0).sort((a,b)=>b.avg-a.avg).slice(0,6);
+
+  document.getElementById('analyticsTopList').innerHTML = ranked.length
+    ? ranked.map((s,i) => `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+        <div style="font-family:var(--mono);font-size:.65rem;color:rgba(255,255,255,.25);width:20px;">#${i+1}</div>
+        <div style="flex:1;font-size:.85rem;">${s.name}</div>
+        <div style="font-family:var(--mono);font-size:.72rem;color:#34d399;">${s.avg}%</div>
+        <div style="font-size:.62rem;color:var(--text-muted);">${s.count} exams</div>
+      </div>`).join('')
+    : '<div class="empty-state" style="padding:16px;"><i class="fas fa-trophy"></i>No exam data yet</div>';
+
+  // Cheat table
+  const cheatRanked = uids.filter(id=>users[id].cheat_count>0)
+    .map(id=>({name:users[id].name||id,count:users[id].cheat_count}))
+    .sort((a,b)=>b.count-a.count).slice(0,6);
+  document.getElementById('analyticsCheatList').innerHTML = cheatRanked.length
+    ? cheatRanked.map(s=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+        <i class="fas fa-exclamation-triangle" style="color:#f59e0b;width:16px;"></i>
+        <div style="flex:1;font-size:.85rem;">${s.name}</div>
+        <div style="font-family:var(--mono);font-size:.72rem;color:#fbbf24;">${s.count} violations</div>
+      </div>`).join('')
+    : '<div class="empty-state" style="padding:16px;"><i class="fas fa-check-circle" style="color:#10b981;opacity:.8;"></i>No violations detected</div>';
+}
+
+// ═══════════════════════════════════════
+//  STUDENT DATABASE
+// ═══════════════════════════════════════
+function renderStudentsPanel() {
+  const stus = _db.students;
+  const query = (document.getElementById('stuSearchInp')?.value||'').toLowerCase();
+  const keys = Object.keys(stus).filter(uid =>
+    !query || (stus[uid].name||uid).toLowerCase().includes(query)
+  );
+  const cont = document.getElementById('studentsList');
+  if (!keys.length) {
+    cont.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i>No students found</div>';
+    return;
+  }
+  cont.innerHTML = keys.map(uid => {
+    const s = stus[uid];
+    const u = _db.users[uid] || {};
+    return `<div class="stu-mgmt-row">
+      <div style="flex:1;">
+        <div style="font-size:.88rem;font-weight:600;">${s.name}</div>
+        <div style="font-size:.65rem;color:var(--text-muted);margin-top:2px;">${u.live||'Never logged in'}</div>
+      </div>
+      <div class="stu-code" onclick="copyText('${s.code}')" title="Click to copy">${s.code}</div>
+      <button class="act-btn act-del" onclick="doDeleteStudent('${uid}')"><i class="fas fa-trash"></i></button>
+    </div>`;
+  }).join('');
+}
+
+function doAddStudent() {
+  const nameEl = document.getElementById('newStuNameInp');
+  const name = nameEl.value.trim();
+  if (!name) { nameEl.style.borderColor='#f87171'; setTimeout(()=>nameEl.style.borderColor='',1000); return; }
+  const uid = name.replace(/[.#$/[\] ]/g,'_');
+  const code = generateCode();
+  db.ref(`omar_data/students/${uid}`).set({ name, code }, err => {
+    if (!err) { nameEl.value = ''; toast('✅ Student added! Code: ' + code); sendTele(`📋 New student!\nName: ${name}\nCode: ${code}`); }
+  });
+}
+
+function doDeleteStudent(uid) {
+  if (!confirm('Delete this student?')) return;
+  db.ref(`omar_data/students/${uid}`).remove();
+  db.ref(`omar_data/users/${uid}`).remove();
+  toast('🗑️ Student deleted');
+}
+
+// ═══════════════════════════════════════
+//  USER ACTIONS
+// ═══════════════════════════════════════
+function doKick(uid, name) {
+  const reason = prompt(`Kick reason for "${name}":`, '⚠️ You have been removed by the teacher.');
+  if (!reason) return;
+  db.ref(`omar_data/users/${uid}/kicked`).set({ reason, time: Date.now() });
+  db.ref(`omar_data/users/${uid}/live`).set('⚠️ Kicked: ' + reason);
+  sendTele(`🔴 Kicked: ${name}\nReason: ${reason}`);
+  toast('Kicked: ' + name);
+}
+
+function doUnkick(uid) {
+  db.ref(`omar_data/users/${uid}/kicked`).remove();
+  toast('✅ Unkicked');
+}
+
+function doDeleteUser(uid) {
+  if (!confirm('Delete this user session?')) return;
+  db.ref(`omar_data/users/${uid}`).remove();
+  toast('🗑️ User removed');
+}
+
+function sendDirectMsg(uid, name) {
+  const msg = prompt(`Message to "${name}":`, '⚠️ Attention! You are being monitored.');
+  if (!msg) return;
+  db.ref(`omar_data/adm_msg/${uid}`).set({ text: msg, time: Date.now() });
+  toast('📨 Message sent to ' + name);
+  sendTele(`📨 Message to ${name}: "${msg}"`);
+}
+
+// ═══════════════════════════════════════
+//  EXAM TIMER
+// ═══════════════════════════════════════
+function setTimerDisplay(sec) {
+  const m = String(Math.floor(sec/60)).padStart(2,'0');
+  const s = String(sec%60).padStart(2,'0');
+  const el = document.getElementById('timerDisp');
+  if (el) { el.textContent = `${m}:${s}`; el.classList.toggle('danger', sec <= 120 && sec > 0); }
+}
+
+function setExamTimer() {
+  const mins = parseInt(document.getElementById('timerMinInp')?.value)||45;
+  _timerLimit = mins * 60; _timerSec = 0; _timerRunning = false;
+  clearInterval(_timerInt);
+  setTimerDisplay(_timerLimit);
+  const btn = document.getElementById('timerToggleBtn');
+  if (btn) btn.innerHTML = '<i class="fas fa-play"></i> Start';
+  toast('⏱ Timer set to ' + mins + ' minutes');
+}
+
+function toggleExamTimer() {
+  const btn = document.getElementById('timerToggleBtn');
+  if (_timerRunning) {
+    clearInterval(_timerInt); _timerRunning = false;
+    if (btn) btn.innerHTML = '<i class="fas fa-play"></i> Start';
+  } else {
+    _timerRunning = true;
+    if (btn) btn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+    _timerInt = setInterval(() => {
+      _timerSec++;
+      const remaining = Math.max(0, _timerLimit - _timerSec);
+      setTimerDisplay(remaining);
+      if (remaining <= 0) {
+        clearInterval(_timerInt); _timerRunning = false;
+        if (btn) btn.innerHTML = '<i class="fas fa-play"></i> Start';
+        db.ref('omar_data/exam_timer').update({ type:'end', locked:true, ts:Date.now() });
+        toast('⏱ Timer ended — site locked');
+      }
+    }, 1000);
+  }
+}
+
+function resetExamTimer() {
+  clearInterval(_timerInt); _timerRunning = false; _timerSec = 0;
+  setTimerDisplay(_timerLimit);
+  const btn = document.getElementById('timerToggleBtn');
+  if (btn) btn.innerHTML = '<i class="fas fa-play"></i> Start';
+}
+
+function broadcastExamTimer() {
+  const remaining = Math.max(0, _timerLimit - _timerSec);
+  if (remaining <= 0) { toast('⚠️ Set a valid timer first'); return; }
+  const endTime = Date.now() + remaining * 1000;
+  db.ref('omar_data/exam_timer').set({
+    type:'exam_start', endTime, totalSeconds:_timerLimit,
+    broadcastBy:'teacher', locked:false, ts:Date.now()
+  });
+  const uids = Object.keys(_db.users);
+  uids.forEach(uid => db.ref(`omar_data/adm_msg/${uid}`).set({
+    text:`📋 Exam started! You have ${Math.round(remaining/60)} minutes — Good luck 🎯`, time:Date.now()
+  }));
+  sendTele(`📋 Exam broadcast!\nTime: ${Math.round(remaining/60)} min\nStudents: ${uids.length}`);
+  toast('📡 Exam timer broadcast to ' + uids.length + ' students!');
+}
+
+function endExamNow() {
+  if (!confirm('End exam and lock the site for all students?')) return;
+  db.ref('omar_data/exam_timer').update({ type:'end', locked:true, ts:Date.now() });
+  toast('🔴 Exam ended — site locked');
+  sendTele('🔴 Exam ended by teacher');
+}
+
+function unlockExam() {
+  db.ref('omar_data/exam_timer').update({ locked:false, type:'unlocked', ts:Date.now() });
+  Object.keys(_db.users).forEach(uid => db.ref(`omar_data/adm_msg/${uid}`).set({
+    text:'🔓 Site unlocked by the teacher — you may continue', time:Date.now()
+  }));
+  toast('🔓 Site unlocked for all students');
+}
+
+// ═══════════════════════════════════════
+//  BROADCAST
+// ═══════════════════════════════════════
+function populateDMSelect() {
+  const sel = document.getElementById('dmStudentSel');
+  if (!sel) return;
+  const stus = _db.students;
+  sel.innerHTML = Object.keys(stus).map(uid =>
+    `<option value="${uid}">${stus[uid].name}</option>`
+  ).join('');
+}
+
+function doBroadcast() {
+  const msg = document.getElementById('broadcastMsg')?.value.trim();
+  if (!msg) return;
+  Object.keys(_db.users).forEach(uid =>
+    db.ref(`omar_data/adm_msg/${uid}`).set({ text:msg, time:Date.now() })
+  );
+  document.getElementById('broadcastMsg').value = '';
+  toast(`📡 Broadcast sent to ${Object.keys(_db.users).length} students`);
+  sendTele(`📣 Broadcast: ${msg}`);
+}
+
+function doDM() {
+  const uid = document.getElementById('dmStudentSel')?.value;
+  const msg = document.getElementById('dmMsg')?.value.trim();
+  if (!uid || !msg) return;
+  db.ref(`omar_data/adm_msg/${uid}`).set({ text:msg, time:Date.now() });
+  document.getElementById('dmMsg').value = '';
+  const name = _db.students[uid]?.name || uid;
+  toast(`📨 Message sent to ${name}`);
+}
+
+// ═══════════════════════════════════════
+//  Q-BANK
+// ═══════════════════════════════════════
+function renderQBank() {
+  const data = _db.qbank || {};
+  const keys = Object.keys(data);
+  const cont = document.getElementById('qbList');
+  if (!cont) return;
+
+  // Update launch button
+  const launchBtn = document.getElementById('qqLaunchBtn');
+  if (launchBtn) {
+    launchBtn.style.display = _qqSelected.length > 0 ? 'inline-flex' : 'none';
+    const cnt = document.getElementById('qqCount');
+    if (cnt) cnt.textContent = _qqSelected.length;
+  }
+
+  if (!keys.length) {
+    cont.innerHTML = '<div class="empty-state"><i class="fas fa-question-circle"></i>No questions yet — add your first!</div>';
+    return;
+  }
+  cont.innerHTML = keys.map((k,i) => {
+    const q = data[k];
+    const sel = _qqSelected.includes(k);
+    return `<div class="qb-item">
+      <div class="qb-num">${i+1}</div>
+      <div class="qb-q">
+        <div style="font-weight:600;margin-bottom:4px;">${q.q}</div>
+        ${q.os ? `<div style="font-size:.72rem;color:var(--text-muted);">${q.os.map((o,i)=>
+          `<span style="${i===q.a?'color:#34d399;font-weight:700;':''}">${'ABCD'[i]}. ${o}</span>`).join(' · ')}</div>` : ''}
+      </div>
+      <div class="qb-check ${sel?'selected':''}" onclick="toggleQQ('${k}')">${sel?'<i class="fas fa-check"></i>':''}</div>
+      <button class="act-btn act-del" onclick="db.ref('omar_data/qbank/${k}').remove()"><i class="fas fa-trash"></i></button>
+    </div>`;
+  }).join('');
+}
+
+function toggleQQ(key) {
+  const idx = _qqSelected.indexOf(key);
+  if (idx>=0) _qqSelected.splice(idx,1);
+  else _qqSelected.push(key);
+  renderQBank();
+}
+
+function doAddQuestion() {
+  const q    = document.getElementById('qbQ')?.value.trim();
+  const o0   = document.getElementById('qbO0')?.value.trim();
+  const o1   = document.getElementById('qbO1')?.value.trim();
+  const o2   = document.getElementById('qbO2')?.value.trim();
+  const o3   = document.getElementById('qbO3')?.value.trim();
+  const ans  = parseInt(document.getElementById('qbAns')?.value)||0;
+  if (!q||!o0||!o1||!o2||!o3) { toast('⚠️ Fill all fields'); return; }
+  db.ref('omar_data/qbank').push({ q, os:[o0,o1,o2,o3], a:ans });
+  ['qbQ','qbO0','qbO1','qbO2','qbO3'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  toast('✅ Question added');
+}
+
+function openQQModal() {
+  if (!_qqSelected.length) { toast('Select at least one question'); return; }
+  const data = _db.qbank || {};
+  document.getElementById('qqSelectedList').innerHTML = _qqSelected.map((k,i) => {
+    const d = data[k];
+    return d ? `<div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:8px 12px;">
+      <div style="font-family:var(--mono);font-size:.65rem;color:#a78bfa;width:22px;">${i+1}</div>
+      <div style="font-size:.82rem;flex:1;">${d.q}</div>
+    </div>` : '';
+  }).join('');
+  document.getElementById('qqModal').classList.add('open');
+}
+
+function closeQQModal() { document.getElementById('qqModal').classList.remove('open'); }
+
+function doLaunchQQ() {
+  const title = document.getElementById('qqTitle')?.value.trim();
+  if (!title) { toast('⚠️ Enter a quiz title'); return; }
+  const data = _db.qbank || {};
+  const questions = _qqSelected.map(k => data[k]).filter(Boolean);
+  const examId = 'QQ_' + Date.now();
+  db.ref(`omar_data/quick_quiz/${examId}`).set({ id:examId, title, questions, isQuickQuiz:true, createdAt:Date.now() });
+  const uids = Object.keys(_db.users);
+  uids.forEach(uid => db.ref(`omar_data/adm_msg/${uid}`).set({
+    text:`⚡ New Quick Quiz: "${title}" — Open the app and start!`, time:Date.now()
+  }));
+  sendTele(`⚡ Quick Quiz launched!\nTitle: ${title}\nQuestions: ${questions.length}\nStudents: ${uids.length}`);
+  _qqSelected = [];
+  closeQQModal();
+  toast(`✅ Quiz launched to ${uids.length} students!`);
+}
+
+// ═══════════════════════════════════════
+//  SCHEDULE
+// ═══════════════════════════════════════
+function renderAnnList() {
+  const data = _db.announcements || {};
+  const el = document.getElementById('annList');
+  if (!el) return;
+  const keys = Object.keys(data).sort().reverse();
+  if (!keys.length) { el.innerHTML = '<div style="font-size:.75rem;color:var(--text-muted);text-align:center;padding:10px;">No announcements yet</div>'; return; }
+  el.innerHTML = keys.map(k => {
+    const a = data[k];
+    return `<div class="ann-card">
+      <button class="ann-del" onclick="db.ref('omar_data/announcements/${k}').remove()"><i class="fas fa-trash"></i></button>
+      <div class="ann-text">${a.text}</div>
+      <div class="ann-meta">${new Date(a.time).toLocaleString()}</div>
+    </div>`;
+  }).join('');
+}
+
+function doPostAnn() {
+  const txt = document.getElementById('annTxt')?.value.trim();
+  if (!txt) return;
+  db.ref('omar_data/announcements').push({ text:txt, time:Date.now(), by:'Admin' });
+  Object.keys(_db.users).forEach(uid =>
+    db.ref(`omar_data/adm_msg/${uid}`).set({ text:'📌 New announcement: '+txt, time:Date.now() })
+  );
+  document.getElementById('annTxt').value = '';
+  toast('📌 Announcement posted');
+  sendTele(`📌 Announcement:\n${txt}`);
+}
+
+function renderScheduleList() {
+  const data = _db.schedule || {};
+  const el = document.getElementById('scList');
+  if (!el) return;
+  const items = Object.entries(data).sort((a,b) => a[1].day.localeCompare(b[1].day));
+  if (!items.length) { el.innerHTML = '<div style="font-size:.75rem;color:var(--text-muted);text-align:center;padding:10px;">Schedule is empty</div>'; return; }
+  el.innerHTML = items.map(([k,s]) => `
+    <div style="display:flex;align-items:center;gap:10px;background:rgba(8,4,22,.6);border:1px solid rgba(34,211,238,.12);border-radius:12px;padding:11px 13px;margin-bottom:7px;">
+      <div style="font-family:var(--mono);font-size:.6rem;color:#22d3ee;min-width:50px;">${s.day.slice(0,3).toUpperCase()}</div>
+      <div style="flex:1;font-size:.85rem;">${s.topic}${s.time?` <span style="font-size:.65rem;color:var(--text-muted);">· ${s.time}</span>`:''}</div>
+      <button class="act-btn act-del" onclick="db.ref('omar_data/schedule/${k}').remove()"><i class="fas fa-trash"></i></button>
+    </div>`).join('');
+}
+
+function doAddSchedule() {
+  const day   = document.getElementById('scDay')?.value;
+  const time  = document.getElementById('scTime')?.value;
+  const topic = document.getElementById('scTopic')?.value.trim();
+  if (!day||!topic) { toast('⚠️ Enter day and topic'); return; }
+  db.ref('omar_data/schedule').push({ day, time:time||'', topic, at:Date.now() });
+  document.getElementById('scTopic').value = '';
+  toast('📅 Schedule item added');
+}
+
+// ═══════════════════════════════════════
+//  CHAT — Live bidirectional teacher chat
+// ═══════════════════════════════════════
+let _chatRenderedKeys = new Set();
+
+function renderChatMonitor() {
+  const msgs = _db.messages || {};
+  const area = document.getElementById('chatMsgsArea');
+  const emptyState = document.getElementById('chatEmptyState');
+  if (!area) return;
+
+  const keys = Object.keys(msgs).sort();
+
+  // Online count
+  const onlineEl = document.getElementById('chatOnlineCount');
+  if (onlineEl) {
+    const n = Object.values(_db.users||{}).filter(u=>u.live&&!u.kicked).length;
+    onlineEl.textContent = n + ' online';
+  }
+
+  if (!keys.length) {
+    area.innerHTML = '';
+    if (emptyState) { emptyState.style.display='flex'; area.appendChild(emptyState); }
+    return;
+  }
+  if (emptyState) emptyState.style.display = 'none';
+
+  const newKeys = keys.filter(k => !_chatRenderedKeys.has(k));
+  if (!newKeys.length) return;
+
+  if (_chatRenderedKeys.size === 0) area.innerHTML = '';
+
+  newKeys.forEach(k => {
+    const m = msgs[k];
+    const isAdmin = (m.role==='admin' || m.name==='المعلم' || m.name==='Admin' || !!m.isAdmin);
+    const div = document.createElement('div');
+    const t = new Date(m.time).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+
+    if (isAdmin) {
+      // ── TEACHER BUBBLE — full-width royal gold ──
+      div.className = 'm-line m-admin-sent';
+      div.dataset.key = k;
+      div.innerHTML = `
+        <button class="m-del-btn" onclick="deleteChatMsg('${k}')" title="Delete">
+          <i class="fas fa-times"></i>
+        </button>
+        <div class="m-admin-badge">
+          <div class="m-admin-name-tag">
+            <div class="m-admin-crown"><i class="fas fa-chalkboard-teacher"></i></div>
+            <span class="m-admin-label">المعلم</span>
+          </div>
+          <span class="m-teacher-pill">TEACHER</span>
+        </div>
+        <div class="m-text">${escapeHtml(m.text)}</div>
+        <span class="m-time">${t}</span>`;
+    } else {
+      // ── STUDENT BUBBLE — left side, subtle ──
+      div.className = 'm-line m-student';
+      div.dataset.key = k;
+      div.innerHTML = `
+        <button class="m-del-btn" onclick="deleteChatMsg('${k}')" title="Delete">
+          <i class="fas fa-times"></i>
+        </button>
+        <span class="m-sender">${escapeHtml(m.name||'?')}</span>
+        <div class="m-text">${escapeHtml(m.text)}</div>
+        <span class="m-time">${t}</span>`;
+    }
+    area.appendChild(div);
+    _chatRenderedKeys.add(k);
+  });
+
+  area.scrollTop = area.scrollHeight;
+}
+
+function sendAdminMsg() {
+  const inp = document.getElementById('adminChatInp');
+  const text = inp ? inp.value.trim() : '';
+  if (!text) return;
+
+  // Close emoji picker if open
+  document.getElementById('emojiPicker')?.classList.remove('open');
+
+  db.ref('omar_data/messages').push({
+    name: 'المعلم', text, time: Date.now(), role: 'admin', isAdmin: true
+  });
+
+  // Also push private adm_msg so students get a notification popup
+  Object.keys(_db.users||{}).forEach(uid => {
+    db.ref(`omar_data/adm_msg/${uid}`).set({ text: '💬 رسالة من المعلم: ' + text, time: Date.now() });
+  });
+
+  inp.value = '';
+  inp.focus();
+}
+
+function deleteChatMsg(key) {
+  db.ref(`omar_data/messages/${key}`).remove();
+  _chatRenderedKeys.delete(key);
+  document.querySelector(`[data-key="${key}"]`)?.remove();
+}
+
+function clearChat() {
+  if (!confirm('Clear all chat messages?')) return;
+  _chatRenderedKeys.clear();
+  db.ref('omar_data/messages').remove();
+  toast('🗑️ Chat cleared');
+}
+
+// ── Quick replies ──
+function qrSend(text) {
+  document.getElementById('adminChatInp').value = text;
+  sendAdminMsg();
+}
+
+// ── Emoji picker ──
+function toggleEmojiPicker() {
+  document.getElementById('emojiPicker')?.classList.toggle('open');
+}
+function insertEmoji(e) {
+  const inp = document.getElementById('adminChatInp');
+  if (inp) { inp.value += e; inp.focus(); }
+  document.getElementById('emojiPicker')?.classList.remove('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.emoji-btn') && !e.target.closest('#emojiPicker'))
+    document.getElementById('emojiPicker')?.classList.remove('open');
+});
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════
+//  CHEAT LOG
+// ═══════════════════════════════════════
+function renderCheatLog() {
+  const log = _db.cheatLog || {};
+  const cont = document.getElementById('cheatLogList');
+  if (!cont) return;
+  const events = Object.entries(log).flatMap(([uid, entries]) =>
+    Object.values(entries||{}).map(e => ({ ...e, uid }))
+  ).sort((a,b) => b.time - a.time);
+
+  if (!events.length) {
+    cont.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle" style="color:#10b981;opacity:.8;"></i>No violations detected</div>';
+    return;
+  }
+  cont.innerHTML = events.map(e => `
+    <div class="cheat-row">
+      <i class="fas fa-exclamation-triangle cheat-icon"></i>
+      <div><div class="cheat-name">${e.name}</div><div class="cheat-type">${e.type}</div></div>
+      <div class="cheat-time">${new Date(e.time).toLocaleString()}</div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════
+function generateCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for(let i=0;i<6;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => toast('📋 Copied: ' + text)).catch(() => prompt('Code:', text));
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  const txt = document.getElementById('toastTxt');
+  if (!el||!txt) return;
+  txt.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+function sendTele(msg) {
+  const token = '8774095768:AAFRjiV_DM4Fy1vVWL5Qm6ShZEHRA3u2TIQ';
+  const chatid = '8346542126';
+  fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatid}&text=${encodeURIComponent(msg)}`).catch(()=>{});
+}
+
+// ─────────────────────────────────────
+// Allow Enter key on login
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') doLogin();
+});
+// ═══════════════════════════════════════
+let _selectedNoteTag = 'general';
+let _currentSpinResult = '';
+
+function addPollOption() {
+  const container = document.getElementById('pollOptions');
+  const inp = document.createElement('input');
+  inp.className = 'inp poll-opt';
+  inp.placeholder = `Option ${container.children.length + 1}...`;
+  inp.style.marginBottom = '6px';
+  container.appendChild(inp);
+}
+
+function launchPoll() {
+  const q = document.getElementById('pollQuestion')?.value.trim();
+  const opts = [...document.querySelectorAll('.poll-opt')].map(i => i.value.trim()).filter(Boolean);
+  if (!q || opts.length < 2) { toast('⚠️ Enter a question and at least 2 options'); return; }
+  const pollData = { question: q, options: opts, votes: {}, active: true, createdAt: Date.now() };
+  db.ref('omar_data/live_poll').set(pollData);
+  // Notify students
+  Object.keys(_db.users).forEach(uid =>
+    db.ref(`omar_data/adm_msg/${uid}`).set({ text: '📊 استفتاء جديد! شارك الآن في التطبيق', time: Date.now() })
+  );
+  toast('📊 Poll launched to all students!');
+}
+
+function clearPoll() {
+  db.ref('omar_data/live_poll').remove();
+  document.getElementById('pollResultsCard').style.display = 'none';
+  document.getElementById('activePollCard').style.display = 'none';
+  toast('🗑️ Poll cleared');
+}
+
+function renderPollPanel() {
+  const poll = _db.live_poll || null;
+  if (!poll || !poll.active) {
+    document.getElementById('pollResultsCard').style.display = 'none';
+    document.getElementById('activePollCard').style.display = 'none';
+    return;
+  }
+  // Active poll display
+  document.getElementById('activePollCard').style.display = 'block';
+  document.getElementById('activePollDisplay').textContent = poll.question;
+  document.getElementById('activePollOptions').innerHTML = (poll.options||[]).map(o =>
+    `<div style="padding:8px 12px;background:rgba(127,0,255,0.08);border:1px solid rgba(127,0,255,0.2);border-radius:10px;font-size:0.82rem;">${o}</div>`
+  ).join('');
+  // Results
+  const votes = poll.votes || {};
+  const total = Object.keys(votes).length;
+  document.getElementById('pollResultsCard').style.display = 'block';
+  document.getElementById('pollTotalVotes').textContent = total + ' votes';
+  const counts = {};
+  (poll.options||[]).forEach(o => { counts[o] = 0; });
+  Object.values(votes).forEach(v => { if (counts[v] !== undefined) counts[v]++; });
+  document.getElementById('pollResultsArea').innerHTML = Object.entries(counts).map(([opt, cnt]) => {
+    const pct = total > 0 ? Math.round(cnt/total*100) : 0;
+    return `<div class="poll-bar-wrap">
+      <div class="poll-bar-label"><span>${opt}</span><span style="color:#a78bfa;">${cnt} (${pct}%)</span></div>
+      <div class="poll-bar-track"><div class="poll-bar-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════
+//  SPOTLIGHT & LEADERBOARD
+// ═══════════════════════════════════════
+function renderSpotlightPanel() {
+  populateSpotlightSelects();
+  renderLeaderboard();
+}
+
+function populateSpotlightSelects() {
+  const users = { ..._db.users, ..._db.students };
+  const names = {};
+  Object.entries(_db.students||{}).forEach(([uid, s]) => { names[uid] = s.name; });
+  Object.entries(_db.users||{}).forEach(([uid, u]) => { if (!names[uid]) names[uid] = u.name; });
+  const opts = Object.entries(names).map(([uid, n]) => `<option value="${uid}">${n}</option>`).join('');
+  ['spotlightSel','boostSel'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '<option value="">-- Select Student --</option>' + opts;
+  });
+}
+
+function launchSpotlight(defaultMsg) {
+  const uid = document.getElementById('spotlightSel')?.value;
+  if (!uid) { toast('⚠️ Select a student first'); return; }
+  const customMsg = document.getElementById('spotlightMsg')?.value.trim();
+  const msg = customMsg || defaultMsg;
+  const name = document.getElementById('spotlightSel')?.selectedOptions[0]?.text || uid;
+  db.ref(`omar_data/adm_msg/${uid}`).set({
+    text: `🎉 ${msg} يا ${name}! المعلم يُكرّمك أمام الجميع 🌟`,
+    time: Date.now(), isSpotlight: true
+  });
+  // Broadcast to ALL students
+  Object.keys(_db.users).forEach(id => {
+    if (id !== uid) db.ref(`omar_data/spotlight_notify/${id}`).set({ name, msg, time: Date.now() });
+  });
+  db.ref('omar_data/spotlight').set({ name, msg, uid, time: Date.now() });
+  toast(`⭐ Spotlight sent to ${name}!`);
+  sendTele(`⭐ Spotlight: ${name} — ${msg}`);
+}
+
+function awardPoints() {
+  const uid = document.getElementById('boostSel')?.value;
+  const pts = parseInt(document.getElementById('boostPts')?.value) || 10;
+  if (!uid) { toast('⚠️ Select a student'); return; }
+  const name = document.getElementById('boostSel')?.selectedOptions[0]?.text || uid;
+  db.ref(`omar_data/users/${uid}/bonus_points`).transaction(cur => (cur||0) + pts);
+  db.ref(`omar_data/adm_msg/${uid}`).set({
+    text: `🏅 المعلم منحك ${pts} نقطة إضافية! استمر في التميز! 🚀`,
+    time: Date.now()
+  });
+  toast(`🏅 +${pts} pts to ${name}`);
+  setTimeout(renderLeaderboard, 500);
+}
+
+function renderLeaderboard() {
+  const users = _db.users;
+  const uids = Object.keys(users);
+  const ranked = uids.map(uid => {
+    const u = users[uid];
+    const histAvg = Object.values(u.history||{}).reduce((a,b) => a + (b.score||0), 0);
+    const bonus = u.bonus_points || 0;
+    return { uid, name: u.name||uid, score: histAvg + bonus, bonus };
+  }).filter(u => u.score > 0).sort((a,b) => b.score - a.score).slice(0,8);
+  const medals = ['🥇','🥈','🥉'];
+  document.getElementById('leaderboardList').innerHTML = ranked.length
+    ? ranked.map((u,i) => `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+        <div style="font-size:1rem;width:24px;text-align:center;">${medals[i]||'·'}</div>
+        <div style="flex:1;font-size:.85rem;">${u.name}</div>
+        <div style="font-family:var(--mono);font-size:.72rem;color:#fbbf24;">${Math.round(u.score)} pts</div>
+        ${u.bonus?`<div style="font-size:.6rem;color:#34d399;">+${u.bonus} bonus</div>`:''}
+      </div>`).join('')
+    : '<div class="empty-state" style="padding:12px;"><i class="fas fa-trophy"></i>No data yet</div>';
+}
+
+// ═══════════════════════════════════════
+//  SOUNDBOARD (Web Audio API)
+// ═══════════════════════════════════════
+function playSound(type) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const plays = {
+      bell: () => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.type = 'sine'; o.frequency.setValueAtTime(880, ctx.currentTime);
+        o.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.8);
+        g.gain.setValueAtTime(0.4, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+        o.start(); o.stop(ctx.currentTime + 1.2);
+      },
+      applause: () => {
+        for (let i = 0; i < 12; i++) {
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.connect(g); g.connect(ctx.destination);
+          o.type = 'sawtooth'; o.frequency.value = 200 + Math.random() * 800;
+          g.gain.setValueAtTime(0, ctx.currentTime + i*0.05);
+          g.gain.linearRampToValueAtTime(0.08, ctx.currentTime + i*0.05 + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.05 + 0.1);
+          o.start(ctx.currentTime + i*0.05); o.stop(ctx.currentTime + i*0.05 + 0.15);
+        }
+      },
+      alert: () => {
+        [0, 0.3, 0.6].forEach(d => {
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.connect(g); g.connect(ctx.destination);
+          o.type = 'square'; o.frequency.value = 880;
+          g.gain.setValueAtTime(0.2, ctx.currentTime+d);
+          g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+d+0.25);
+          o.start(ctx.currentTime+d); o.stop(ctx.currentTime+d+0.25);
+        });
+      },
+      correct: () => {
+        [523,659,784].forEach((f,i) => {
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.connect(g); g.connect(ctx.destination);
+          o.type = 'sine'; o.frequency.value = f;
+          g.gain.setValueAtTime(0.25, ctx.currentTime+i*0.15);
+          g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+i*0.15+0.3);
+          o.start(ctx.currentTime+i*0.15); o.stop(ctx.currentTime+i*0.15+0.3);
+        });
+      },
+      wrong: () => {
+        [300,200].forEach((f,i) => {
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.connect(g); g.connect(ctx.destination);
+          o.type = 'sawtooth'; o.frequency.value = f;
+          g.gain.setValueAtTime(0.2, ctx.currentTime+i*0.2);
+          g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+i*0.2+0.3);
+          o.start(ctx.currentTime+i*0.2); o.stop(ctx.currentTime+i*0.2+0.35);
+        });
+      },
+      timeup: () => {
+        [660,550,440,330].forEach((f,i) => {
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.connect(g); g.connect(ctx.destination);
+          o.type = 'sine'; o.frequency.value = f;
+          g.gain.setValueAtTime(0.28, ctx.currentTime+i*0.2);
+          g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+i*0.2+0.35);
+          o.start(ctx.currentTime+i*0.2); o.stop(ctx.currentTime+i*0.2+0.4);
+        });
+      },
+      tada: () => {
+        [523,659,784,1047].forEach((f,i) => {
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.connect(g); g.connect(ctx.destination);
+          o.type = 'sine'; o.frequency.value = f;
+          g.gain.setValueAtTime(0.22, ctx.currentTime+i*0.1);
+          g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+i*0.1+0.4);
+          o.start(ctx.currentTime+i*0.1); o.stop(ctx.currentTime+i*0.1+0.5);
+        });
+      },
+      drumroll: () => {
+        for (let i = 0; i < 20; i++) {
+          const buf = ctx.createBuffer(1, ctx.sampleRate*0.05, ctx.sampleRate);
+          const d = buf.getChannelData(0);
+          for (let j = 0; j < d.length; j++) d[j] = (Math.random()*2-1) * Math.max(0, 1 - j/d.length);
+          const src = ctx.createBufferSource(), g = ctx.createGain();
+          src.buffer = buf; src.connect(g); g.connect(ctx.destination);
+          g.gain.value = 0.15 + i*0.02;
+          src.start(ctx.currentTime + i*0.05);
+        }
+      }
+    };
+    if (plays[type]) plays[type]();
+    toast('🔊 ' + type.charAt(0).toUpperCase() + type.slice(1) + ' played');
+  } catch(e) { toast('⚠️ Audio not available'); }
+}
+
+function broadcastAlert(emoji, title, body) {
+  Object.keys(_db.users).forEach(uid =>
+    db.ref(`omar_data/adm_msg/${uid}`).set({ text: `${emoji} ${title}: ${body}`, time: Date.now() })
+  );
+  toast(`${emoji} Alert broadcast sent!`);
+}
+
+// ═══════════════════════════════════════
+//  RANDOMIZER
+// ═══════════════════════════════════════
+let _spinning = false;
+
+function spinStudent() {
+  if (_spinning) return;
+  const names = Object.values(_db.users).filter(u => u.live && !u.kicked).map(u => u.name).filter(Boolean);
+  if (!names.length) { toast('⚠️ No online students to pick from'); return; }
+  _spinning = true;
+  const wheel = document.getElementById('spinWheel');
+  const result = document.getElementById('spinResult');
+  result.textContent = '...';
+  let spins = 0;
+  const totalSpins = 20 + Math.floor(Math.random()*15);
+  const chosen = names[Math.floor(Math.random()*names.length)];
+  _currentSpinResult = chosen;
+  let deg = 0;
+  const interval = setInterval(() => {
+    deg += (totalSpins - spins) * 2 + 10;
+    wheel.style.transform = `rotate(${deg}deg)`;
+    spins++;
+    if (spins >= totalSpins) {
+      clearInterval(interval);
+      _spinning = false;
+      result.textContent = '🎯 ' + chosen;
+      playSound('bell');
+    }
+  }, 80);
+}
+
+function broadcastSpinResult() {
+  if (!_currentSpinResult) { toast('⚠️ Spin first!'); return; }
+  const msg = `🎯 الطالب المختار للإجابة: ${_currentSpinResult}! 🎉`;
+  Object.keys(_db.users).forEach(uid =>
+    db.ref(`omar_data/adm_msg/${uid}`).set({ text: msg, time: Date.now() })
+  );
+  db.ref('omar_data/messages').push({ name: 'المعلم', text: msg, time: Date.now(), role:'admin', isAdmin:true });
+  toast('📡 Result broadcast!');
+}
+
+function makeGroups() {
+  const size = parseInt(document.getElementById('groupSize')?.value) || 3;
+  const names = Object.values(_db.users).filter(u => u.name && !u.kicked).map(u => u.name);
+  if (names.length < 2) { toast('⚠️ Need at least 2 online students'); return; }
+  const shuffled = names.sort(() => Math.random() - 0.5);
+  const groups = [];
+  for (let i = 0; i < shuffled.length; i += size) {
+    groups.push(shuffled.slice(i, i + size));
+  }
+  document.getElementById('groupsResult').innerHTML = groups.map((g, i) => `
+    <div class="group-box">
+      <div class="group-title">GROUP ${i+1}</div>
+      ${g.map(n => `<div class="group-member">👤 ${n}</div>`).join('')}
+    </div>`).join('');
+  toast(`✅ ${groups.length} groups created!`);
+}
+
+function rollDice() {
+  const n = Math.ceil(Math.random() * 6);
+  const faces = ['','⚀','⚁','⚂','⚃','⚄','⚅'];
+  document.getElementById('diceResult').textContent = faces[n] + ' ' + n;
+  playSound('correct');
+}
+
+function flipCoin() {
+  const r = Math.random() > 0.5;
+  document.getElementById('diceResult').textContent = r ? '🪙 Heads!' : '🔘 Tails!';
+}
+
+// ═══════════════════════════════════════
+//  STUDENT NOTES
+// ═══════════════════════════════════════
+function selectNoteTag(btn) {
+  document.querySelectorAll('.note-tag-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  _selectedNoteTag = btn.dataset.tag;
+}
+
+function populateNoteSel() {
+  const sel = document.getElementById('noteStudentSel');
+  if (!sel) return;
+  const names = {};
+  Object.entries(_db.students||{}).forEach(([uid, s]) => { names[uid] = s.name; });
+  Object.entries(_db.users||{}).forEach(([uid, u]) => { if (!names[uid] && u.name) names[uid] = u.name; });
+  sel.innerHTML = '<option value="">-- Select Student --</option>' +
+    Object.entries(names).map(([uid, n]) => `<option value="${uid}">${n}</option>`).join('');
+}
+
+function saveNote() {
+  const uid = document.getElementById('noteStudentSel')?.value;
+  const text = document.getElementById('noteText')?.value.trim();
+  if (!uid || !text) { toast('⚠️ Select student and write a note'); return; }
+  const name = document.getElementById('noteStudentSel')?.selectedOptions[0]?.text || uid;
+  db.ref('omar_data/notes').push({ uid, name, text, tag: _selectedNoteTag, time: Date.now() });
+  document.getElementById('noteText').value = '';
+  toast('📝 Note saved');
+}
+
+function renderNotes() {
+  db.ref('omar_data/notes').once('value', snap => {
+    const notes = snap.val() || {};
+    const search = (document.getElementById('notesSearch')?.value||'').toLowerCase();
+    const cont = document.getElementById('notesList');
+    if (!cont) return;
+    const entries = Object.entries(notes).sort((a,b) => b[1].time - a[1].time);
+    const filtered = entries.filter(([,n]) =>
+      !search || n.name.toLowerCase().includes(search) || n.text.toLowerCase().includes(search)
+    );
+    if (!filtered.length) { cont.innerHTML = '<div class="empty-state"><i class="fas fa-sticky-note"></i>No notes yet</div>'; return; }
+    const tagEmojis = { general:'📝', concern:'⚠️', praise:'⭐', parent:'👨‍👩‍👧' };
+    cont.innerHTML = filtered.map(([k, n]) => `
+      <div class="note-card ${n.tag||'general'}">
+        <button class="note-del" onclick="db.ref('omar_data/notes/${k}').remove().then(renderNotes)"><i class="fas fa-times"></i></button>
+        <div class="note-student">${tagEmojis[n.tag]||'📝'} ${n.name}</div>
+        <div class="note-body">${n.text}</div>
+        <div class="note-meta">${new Date(n.time).toLocaleString()}</div>
+      </div>`).join('');
+  });
+}
+
+function exportNotes() {
+  db.ref('omar_data/notes').once('value', snap => {
+    const notes = Object.values(snap.val()||{}).sort((a,b)=>b.time-a.time);
+    if (!notes.length) { toast('⚠️ No notes to export'); return; }
+    const text = notes.map(n =>
+      `[${new Date(n.time).toLocaleString()}] [${n.tag||'general'}] ${n.name}:\n${n.text}\n`
+    ).join('\n---\n\n');
+    const blob = new Blob([text], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `notes_${new Date().toISOString().slice(0,10)}.txt`;
+    a.click();
+    toast('📥 Notes exported!');
+  });
+}
+
+function populateAllSelects() {
+  populateSpotlightSelects();
+  populateNoteSel();
+}
+</script>
+</body>
+</html>
